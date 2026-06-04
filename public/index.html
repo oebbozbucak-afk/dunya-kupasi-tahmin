@@ -23,7 +23,7 @@
         <button onclick="admin()">Güncelle</button>
     </div>
     <script>
-        window.onkeydown=(e)=>{if(e.key==='a')document.getElementById('admin').style.display='block'};
+        let k=""; window.onkeydown=(e)=>{k+=e.key; if(k.includes("admin"))document.getElementById('admin').style.display='block';};
         async function kaydet(){
             let t = {}; document.querySelectorAll('#maclar > div').forEach(d=>t[d.dataset.id]={home:d.querySelector('.h').value,away:d.querySelector('.a').value});
             await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,tahminler:t})});
