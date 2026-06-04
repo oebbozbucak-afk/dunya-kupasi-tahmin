@@ -26,12 +26,12 @@
         let k=""; window.onkeydown=(e)=>{k+=e.key; if(k.includes("admin"))document.getElementById('admin').style.display='block';};
         async function kaydet(){
             let t = {}; document.querySelectorAll('#maclar > div').forEach(d=>t[d.dataset.id]={home:d.querySelector('.h').value,away:d.querySelector('.a').value});
-            await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,tahminler:t})});
-            location.reload();
+            let res = await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,tahminler:t})});
+            let d = await res.json(); alert(d.mesaj); location.reload();
         }
         async function admin(){
-            await fetch('/api/admin/mac-sonucu-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value,macId:document.getElementById('mid').value,homeScore:document.getElementById('sh').value,awayScore:document.getElementById('sa').value})});
-            location.reload();
+            let res = await fetch('/api/admin/mac-sonucu-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value,macId:document.getElementById('mid').value,homeScore:document.getElementById('sh').value,awayScore:document.getElementById('sa').value})});
+            let d = await res.json(); alert(d.mesaj); location.reload();
         }
         fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(o=>`<tr><td>${o.isim}</td><td>${o.puan}</td></tr>`).join(''));
     </script>
