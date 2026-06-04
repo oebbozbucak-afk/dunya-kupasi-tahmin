@@ -13,13 +13,20 @@ mongoose.connect(uri)
 const Tahmin = mongoose.model('Tahmin', new mongoose.Schema({ isim: { type: String, unique: true }, tahminler: Object, puan: { type: Number, default: 0 } }));
 const Sonuc = mongoose.model('Sonuc', new mongoose.Schema({ macId: { type: String, unique: true }, homeScore: Number, awayScore: Number }));
 
+// GÜNCEL PUANLAMA MOTORU
 function hesapla(tH, tA, gH, gA) {
+    // Tam Skor: Kazanan(2) + Skor(4) = 6 puan
+    if (tH === gH && tA === gA) return 6;
+    
     let p = 0;
-    if (tH === gH && tA === gA) p += 4;
-    else if ((tH > tA && gH > gA) || (tH < tA && gH < gA)) p += 2;
+    // Kazananı veya Beraberliği Bilme
+    if ((tH > tA && gH > gA) || (tH < tA && gH < gA)) p += 2;
     else if (tH === tA && gH === gA) p += 3;
+    
+    // Gol bilme
     if (tH === gH) p += 1; 
     if (tA === gA) p += 1;
+    
     return p;
 }
 
