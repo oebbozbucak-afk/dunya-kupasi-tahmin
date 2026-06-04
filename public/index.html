@@ -93,7 +93,7 @@
             justify-content: center;
         }
         .score-input {
-            width: 40px;
+            width: 45px;
             height: 40px;
             text-align: center;
             font-size: 16px;
@@ -150,7 +150,46 @@
             </div>
 
             <div id="fiksturAlani">
+                <div class="match-row" data-id="mac1">
+                    <div class="team-label">Kanada 🇨🇦</div>
+                    <div class="score-inputs">
+                        <input type="number" class="score-input home-score" min="0" required>
+                        <span>-</span>
+                        <input type="number" class="score-input away-score" min="0" required>
+                    </div>
+                    <div class="team-label">🇺🇸 ABD</div>
                 </div>
+
+                <div class="match-row" data-id="mac2">
+                    <div class="team-label">Meksika 🇲🇽</div>
+                    <div class="score-inputs">
+                        <input type="number" class="score-input home-score" min="0" required>
+                        <span>-</span>
+                        <input type="number" class="score-input away-score" min="0" required>
+                    </div>
+                    <div class="team-label">💪 Play-off A</div>
+                </div>
+
+                <div class="match-row" data-id="mac3">
+                    <div class="team-label">Arjantin 🇦🇷</div>
+                    <div class="score-inputs">
+                        <input type="number" class="score-input home-score" min="0" required>
+                        <span>-</span>
+                        <input type="number" class="score-input away-score" min="0" required>
+                    </div>
+                    <div class="team-label">🇫🇷 Fransa</div>
+                </div>
+
+                <div class="match-row" data-id="mac4">
+                    <div class="team-label">Brezilya 🇧🇷</div>
+                    <div class="score-inputs">
+                        <input type="number" class="score-input home-score" min="0" required>
+                        <span>-</span>
+                        <input type="number" class="score-input away-score" min="0" required>
+                    </div>
+                    <div class="team-label">🇩🇪 Almanya</div>
+                </div>
+            </div>
 
             <button type="submit" style="margin-top: 15px;">Tahminleri Kaydet / Güncelle</button>
         </form>
@@ -160,9 +199,9 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         puanTablosunuGetir();
-        fiksturuGetir();
     });
 
+    // Puan Durumunu Çeken Fonksiyon
     function puanTablosunuGetir() {
         fetch('/api/puan-tablosu')
             .then(res => res.json())
@@ -170,7 +209,7 @@
                 const tbody = document.getElementById('leaderboard-body');
                 tbody.innerHTML = "";
 
-                if (data.length === 0) {
+                if (!data || data.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #94a3b8;">Henüz tahmin yapan olmadı. İlk sen ol!</td></tr>`;
                     return;
                 }
@@ -191,23 +230,44 @@
                     `;
                 });
             })
-            .catch(err => console.error("Puan tablosu yüklenirken hata:", err));
+            .catch(err => {
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #f87171;">Bağlantı bekleniyor...</td></tr>`;
+            });
     }
 
-    function fiksturuGetir() {
-        fetch('/api/fikstur')
-            .then(res => res.json())
-            .then(maclar => {
-                const alan = document.getElementById('fiksturAlani');
-                alan.innerHTML = "";
+    // Form Gönderme Fonksiyonu
+    document.getElementById('tahminForm').addEventListener('submit', (e) => {
+        e.preventDefault();
 
-                maclar.forEach(mac => {
-                    alan.innerHTML += `
-                        <div class="match-row" data-id="${mac.id}">
-                            <div class="team-label">${mac.home}</div>
-                            <div class="score-inputs">
-                                <input type="number" class="score-input home-score" min="0" required>
-                                <span>-</span>
-                                <input type="number" class="score-input away-score" min="0" required>
-                            </div>
-                            <div class="team-label">${mac.away}</div>
+        const isim = document.getElementById('oyuncuAdi').value.trim();
+        const macRows = document.querySelectorAll('.match-row');
+        const tahminler = {};
+
+        macRows.forEach(row => {
+            const macId = row.getAttribute('data-id');
+            const homeScore = row.querySelector('.home-score').value;
+            const awayScore = row.querySelector('.away-score').value;
+
+            tahminler[macId] = {
+                home: Number(homeScore),
+                away: Number(awayScore)
+            };
+        });
+
+        fetch('/api/tahmin-kaydet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isim, tahminler })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.mesaj);
+            puanTablosunuGetir();
+        })
+        .catch(err => alert("Tahmin kaydedilirken bir bağlantı hatası oluştu!"));
+    });
+</script>
+
+</body>
+</html>
