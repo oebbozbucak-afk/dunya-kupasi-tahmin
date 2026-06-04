@@ -58,6 +58,27 @@
         .rank-2 { color: #cbd5e1; }
         .rank-3 { color: #b45309; }
 
+        /* Kurallar Listesi Tasarımı */
+        .rules-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .rules-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 14px;
+        }
+        .rules-list li:last-child { border-bottom: none; }
+        .example-box {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
         .input-group {
             margin-bottom: 15px;
         }
@@ -142,6 +163,22 @@
     </div>
 
     <div class="card">
+        <h2>📜 Puanlama Kuralları</h2>
+        <ul class="rules-list">
+            <li>🟢 <b>Galip geleni bilmek:</b> +2 Puan</li>
+            <li>🔵 <b>Beraberliği bilmek:</b> +3 Puan</li>
+            <li>🔥 <b>Tam skoru bilmek:</b> Ekstra +4 Puan</li>
+            <li>⚽ <b>Bir tarafın gol sayısını bilmek:</b> +1 Puan</li>
+        </ul>
+        <div class="example-box">
+            <b>💡 Örnek Hesaplamalar:</b><br>
+            • Tahmin: 3-0 | Skor: 3-2 -> +2 Galibiyet +1 Gol sayısı = <b>3 Puan</b><br>
+            • Tahmin: 2-1 | Skor: 0-1 -> Sadece deplasman golü doğru = <b>1 Puan</b><br>
+            • Tahmin: 3-3 | Skor: 3-3 -> +3 Beraberlik +4 Skor = <b>7 Puan</b>
+        </div>
+    </div>
+
+    <div class="card">
         <h2>⚽ Tahminlerini Gir</h2>
         <form id="tahminForm">
             <div class="input-group">
@@ -201,7 +238,6 @@
         puanTablosunuGetir();
     });
 
-    // Puan Durumunu Çeken Fonksiyon
     function puanTablosunuGetir() {
         fetch('/api/puan-tablosu')
             .then(res => res.json())
@@ -236,7 +272,6 @@
             });
     }
 
-    // Form Gönderme Fonksiyonu
     document.getElementById('tahminForm').addEventListener('submit', (e) => {
         e.preventDefault();
 
