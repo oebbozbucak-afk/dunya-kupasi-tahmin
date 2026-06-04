@@ -3,224 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dünya Kupası 2026 Skor Tahmin Oyunu</title>
+    <title>Dünya Kupası 2026 Tahmin Yarışması</title>
     <style>
+        :root {
+            --primary: #10b981;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+        }
         body {
-            background-color: #1a1a2e;
-            color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 20px;
-        }
-
-        .container {
-            background-color: #162447;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 5px;
-            color: #e43f5a;
-        }
-
-        .subtitle {
-            color: #8c92ac;
-            margin-bottom: 25px;
-        }
-
-        /* Kurallar Kutusu */
-        .rules-box {
-            background-color: #1f4068;
-            border-left: 5px solid #e43f5a;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: left;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-
-        .rules-box h3 {
-            margin-top: 0;
-            color: #e43f5a;
-        }
-
-        .rules-box ul {
-            margin: 0;
-            padding-left: 20px;
-            color: #cbd5e1;
-        }
-
-        .rules-box li {
-            margin-bottom: 5px;
-        }
-
-        .form-group {
             display: flex;
             flex-direction: column;
-            text-align: left;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        h1, h2 {
+            text-align: center;
+            color: var(--primary);
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-
-        .form-group label {
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #8c92ac;
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
-
-        .form-group input {
-            background-color: #1a1a2e;
-            border: 2px solid #1f4068;
+        .leaderboard-table th, .leaderboard-table td {
             padding: 12px;
-            color: white;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .match-card {
-            background-color: #1f4068;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .team {
-            width: 35%;
-            font-weight: bold;
-            font-size: 18px;
             text-align: left;
+            border-bottom: 1px solid #334155;
         }
-
-        .text-right {
-            text-align: right;
+        .leaderboard-table th {
+            color: var(--primary);
+            font-weight: 600;
         }
+        .rank {
+            font-weight: bold;
+            width: 40px;
+        }
+        .rank-1 { color: #fbbf24; }
+        .rank-2 { color: #cbd5e1; }
+        .rank-3 { color: #b45309; }
 
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            box-sizing: border-box;
+        }
+        .match-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .team-label { width: 35%; text-align: center; font-size: 14px; }
         .score-inputs {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
             width: 30%;
+            justify-content: center;
         }
-
-        .score-inputs input {
-            width: 45px;
-            height: 45px;
+        .score-input {
+            width: 40px;
+            height: 40px;
             text-align: center;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
-            border-radius: 8px;
-            border: none;
-            background-color: #ffffff;
-            color: #1a1a2e;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
         }
-
-        .vs {
-            font-weight: bold;
-            color: #e43f5a;
-        }
-
-        .btn-submit {
-            background-color: #e43f5a;
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 15px 20px;
-            width: 100%;
-            border-radius: 8px;
-            font-size: 18px;
+            border-radius: 6px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.2s;
         }
-
-        .btn-submit:hover {
-            background-color: #b33046;
-        }
-
-        hr {
-            border: 0;
-            height: 1px;
-            background: #1f4068;
-            margin: 20px 0;
-        }
+        button:hover { background: #059669; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🏆 Dünya Kupası 2026</h1>
-        <p class="subtitle">Skor Tahmin Grubu Panelim</p>
+<div class="container">
+    <h1>🏆 WC 2026 TAHMİN YARIŞI 🏆</h1>
 
-        <div class="rules-box">
-            <h3>📜 Tahmin Kuralları</h3>
-            <ul>
-                <li><strong>Tam Skor (3 Puan):</strong> Maçın skorunu birebir doğru tahmin ederseniz.</li>
-                <li><strong>Maç Sonucu & Fark (2 Puan):</strong> Kazananı ve gol farkını bilirseniz (Örn: Tahmin 2-0, Maç 3-1 biterse).</li>
-                <li><strong>Yalnızca Kazanan (1 Puan):</strong> Sadece maçı kimin kazanacağını bilirseniz.</li>
-                <li><strong>Son Katılım:</strong> Tahminler maç başlamadan son 15 dakika öncesine kadar girilmelidir!</li>
-            </ul>
-        </div>
-
-        <form id="tahmin-formu">
-            <div class="form-group">
-                <label for="username">Adınız / Takma Adınız:</label>
-                <input type="text" id="username" placeholder="Örn: Bahadır" required>
-            </div>
-
-            <hr>
-
-            <div class="match-card">
-                <div class="team">
-                    <span class="team-name">Kanada 🇨🇦</span>
-                </div>
-                
-                <div class="score-inputs">
-                    <input type="number" id="home-score" min="0" placeholder="0" required>
-                    <span class="vs">X</span>
-                    <input type="number" id="away-score" min="0" placeholder="0" required>
-                </div>
-
-                <div class="team text-right">
-                    <span class="team-name">🇺🇸 ABD</span>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-submit">Tahmini Gönder</button>
-        </form>
+    <div class="card">
+        <h2>📊 Genel Puan Durumu</h2>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th class="rank">Sıra</th>
+                    <th>Oyuncu Adı</th>
+                    <th style="text-align: right;">Toplam Puan</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #94a3b8;">Yükleniyor...</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
-    <script>
-        document.getElementById('tahmin-formu').addEventListener('submit', function(e) {
-            e.preventDefault();
+    <div class="card">
+        <h2>⚽ Tahminlerini Gir</h2>
+        <form id="tahminForm">
+            <div class="input-group">
+                <label for="oyuncuAdi">Adın Soyadın (Gruptaki adın neyse aynısını yaz):</label>
+                <input type="text" id="oyuncuAdi" placeholder="Örn: Bahadır Özbucak" required>
+            </div>
 
-            const veri = {
-                isim: document.getElementById('username').value,
-                kanadaSkor: document.getElementById('home-score').value,
-                abdSkor: document.getElementById('away-score').value
-            };
+            <div id="fiksturAlani">
+                </div>
 
-            fetch('/tahmin-kaydet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(veri)
-            })
+            <button type="submit" style="margin-top: 15px;">Tahminleri Kaydet / Güncelle</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        puanTablosunuGetir();
+        fiksturuGetir();
+    });
+
+    function puanTablosunuGetir() {
+        fetch('/api/puan-tablosu')
             .then(res => res.json())
             .then(data => {
-                alert(data.mesaj);
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = "";
+
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #94a3b8;">Henüz tahmin yapan olmadı. İlk sen ol!</td></tr>`;
+                    return;
+                }
+
+                data.forEach((oyuncu, index) => {
+                    const sira = index + 1;
+                    let siraClass = "";
+                    if(sira === 1) siraClass = "rank-1";
+                    if(sira === 2) siraClass = "rank-2";
+                    if(sira === 3) siraClass = "rank-3";
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="rank ${siraClass}">#${sira}</td>
+                            <td style="font-weight: 500;">${oyuncu.isim}</td>
+                            <td style="text-align: right; font-weight: bold; color: #10b981;">${oyuncu.puan} Puan</td>
+                        </tr>
+                    `;
+                });
             })
-            .catch(err => console.error("Hata oluştu:", err));
-        });
-    </script>
-</body>
-</html>
+            .catch(err => console.error("Puan tablosu yüklenirken hata:", err));
+    }
+
+    function fiksturuGetir() {
+        fetch('/api/fikstur')
+            .then(res => res.json())
+            .then(maclar => {
+                const alan = document.getElementById('fiksturAlani');
+                alan.innerHTML = "";
+
+                maclar.forEach(mac => {
+                    alan.innerHTML += `
+                        <div class="match-row" data-id="${mac.id}">
+                            <div class="team-label">${mac.home}</div>
+                            <div class="score-inputs">
+                                <input type="number" class="score-input home-score" min="0" required>
+                                <span>-</span>
+                                <input type="number" class="score-input away-score" min="0" required>
+                            </div>
+                            <div class="team-label">${mac.away}</div>
