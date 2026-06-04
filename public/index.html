@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dünya Kupası 2026 Skor Tahmin Oyunu</title>
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #162447;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            color: #e43f5a;
+        }
+
+        .subtitle {
+            color: #8c92ac;
+            margin-bottom: 25px;
+        }
+
+        /* Kurallar Kutusu */
+        .rules-box {
+            background-color: #1f4068;
+            border-left: 5px solid #e43f5a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .rules-box h3 {
+            margin-top: 0;
+            color: #e43f5a;
+        }
+
+        .rules-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #cbd5e1;
+        }
+
+        .rules-box li {
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #8c92ac;
+        }
+
+        .form-group input {
+            background-color: #1a1a2e;
+            border: 2px solid #1f4068;
+            padding: 12px;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .match-card {
+            background-color: #1f4068;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .team {
+            width: 35%;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .score-inputs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 30%;
+        }
+
+        .score-inputs input {
+            width: 45px;
+            height: 45px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            background-color: #ffffff;
+            color: #1a1a2e;
+        }
+
+        .vs {
+            font-weight: bold;
+            color: #e43f5a;
+        }
+
+        .btn-submit {
+            background-color: #e43f5a;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #b33046;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #1f4068;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🏆 Dünya Kupası 2026</h1>
+        <p class="subtitle">Skor Tahmin Grubu Panelim</p>
+
+        <div class="rules-box">
+            <h3>📜 Tahmin Kuralları</h3>
+            <ul>
+                <li><strong>Tam Skor (3 Puan):</strong> Maçın skorunu birebir doğru tahmin ederseniz.</li>
+                <li><strong>Maç Sonucu & Fark (2 Puan):</strong> Kazananı ve gol farkını bilirseniz (Örn: Tahmin 2-0, Maç 3-1 biterse).</li>
+                <li><strong>Yalnızca Kazanan (1 Puan):</strong> Sadece maçı kimin kazanacağını bilirseniz.</li>
+                <li><strong>Son Katılım:</strong> Tahminler maç başlamadan son 15 dakika öncesine kadar girilmelidir!</li>
+            </ul>
+        </div>
+
+        <form id="tahmin-formu">
+            <div class="form-group">
+                <label for="username">Adınız / Takma Adınız:</label>
+                <input type="text" id="username" placeholder="Örn: Bahadır" required>
+            </div>
+
+            <hr>
+
+            <div class="match-card">
+                <div class="team">
+                    <span class="team-name">Kanada 🇨🇦</span>
+                </div>
+                
+                <div class="score-inputs">
+                    <input type="number" id="home-score" min="0" placeholder="0" required>
+                    <span class="vs">X</span>
+                    <input type="number" id="away-score" min="0" placeholder="0" required>
+                </div>
+
+                <div class="team text-right">
+                    <span class="team-name">🇺🇸 ABD</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Tahmini Gönder</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('tahmin-formu').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const veri = {
+                isim: document.getElementById('username').value,
+                kanadaSkor: document.getElementById('home-score').value,
+                abdSkor: document.getElementById('away-score').value
+            };
+
+            fetch('/tahmin-kaydet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(veri)
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.mesaj);
+            })
+            .catch(err => console.error("Hata oluştu:", err));
+        });
+    </script>
+</body>
+</html>
