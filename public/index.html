@@ -2,46 +2,49 @@
 <html lang="tr">
 <head><meta charset="UTF-8"><title>WC 2026 Tahmin</title>
 <style>
-    body{background:#0f172a; color:white; font-family:sans-serif; padding:20px; text-align:center;}
-    .card{background:#1e293b; padding:20px; border-radius:10px; margin:10px auto; max-width:500px;}
-    .mac-satir{padding:10px; border-bottom:1px solid #334155; display:flex; justify-content:space-between;}
-    input, textarea{background:#0f172a; color:white; border:1px solid #475569; padding:5px;}
+    body{background:#0f172a; color:white; font-family:sans-serif; padding:10px; text-align:center;}
+    .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:500px;}
+    .mac-satir{padding:10px; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;}
+    input, textarea{background:#0f172a; color:white; border:1px solid #475569; padding:5px; width:40px; text-align:center;}
 </style></head>
 <body>
     <h1>🏆 FIFA Dünya Kupası 2026</h1>
+    <div class="card" style="border: 1px solid #38bdf8;">
+        <h3>📌 Puanlama Kuralları</h3>
+        <ul style="text-align: left; font-size: 0.8em; line-height: 1.4;">
+            <li>🏆 7 Puan: Beraberliği ve skoru tam bilmek</li>
+            <li>🎯 6 Puan: Skoru ve kazananı tam bilmek</li>
+            <li>🤝 3 Puan: Beraberliği bilmek</li>
+            <li>⚽ 3 Puan: Kazananı bilip, bir takımın golünü tutturmak</li>
+            <li>📈 2 Puan: Sadece kazananı bilmek</li>
+            <li>📉 1 Puan: Kazananı bilemeyip bir takımın golünü tutturmak</li>
+        </ul>
+    </div>
     <div class="card">
-        <h3>Tarih Seç: <input type="date" id="tarih" onchange="maclariGetir()"></h3>
+        <h3>Tarih Seç: <input type="date" id="tarih" style="width:120px" onchange="maclariGetir()"></h3>
         <div id="macListesi"></div>
-        <br><input id="isim" placeholder="Adın">
+        <br><input id="isim" placeholder="Adın" style="width:100px">
         <button onclick="kaydet()">Tahminleri Gönder</button>
     </div>
-    
     <div class="card"><h2>Puan Durumu</h2><table id="tbl" style="width:100%"></table></div>
 
     <div id="admin" class="card" style="display:none; border:2px solid red;">
         <h3>Admin Paneli</h3>
-        <input id="sifre" type="password" placeholder="Şifre"><br><br>
-        <textarea id="macListesiInput" placeholder="Tarih,İsim,Id&#10;2026-06-11,Meksika-Güney Afrika,m1" style="width:90%; height:80px"></textarea><br>
+        <input id="sifre" type="password" placeholder="Şifre" style="width:100px"><br><br>
+        <textarea id="macListesiInput" placeholder="Tarih,İsim,Id" style="width:90%; height:60px"></textarea><br>
         <button onclick="topluEkle()">Toplu Maçları Yükle</button>
     </div>
 
     <script>
         let k=""; window.onkeydown=(e)=>{k+=e.key; if(k.includes("admin"))document.getElementById('admin').style.display='block';};
+        window.onload = () => { document.getElementById('tarih').value = new Date().toISOString().split('T')[0]; maclariGetir(); };
         
-        window.onload = () => {
-            let bugun = new Date().toISOString().split('T')[0];
-            document.getElementById('tarih').value = bugun;
-            maclariGetir();
-        };
-
         async function maclariGetir() {
             let t = document.getElementById('tarih').value;
             let res = await fetch('/api/maclar/' + t);
             let d = await res.json();
             document.getElementById('macListesi').innerHTML = d.length > 0 ? d.map(m => `
-                <div class="mac-satir" data-id="${m.macId}">
-                    ${m.isim} <div><input class="h" value="0">-<input class="a" value="0"></div>
-                </div>`).join('') : "Bu tarihte maç yok.";
+                <div class="mac-satir" data-id="${m.macId}">${m.isim} <div><input class="h" value="0">-<input class="a" value="0"></div></div>`).join('') : "Bugün maç yok.";
         }
 
         async function topluEkle(){
