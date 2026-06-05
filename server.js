@@ -11,14 +11,32 @@ const User = mongoose.model('User', new mongoose.Schema({ isim: { type: String, 
 const Mac = mongoose.model('Mac', new mongoose.Schema({ tarih: String, isim: String, macId: { type: String, unique: true }, homeScore: { type: Number, default: 0 }, awayScore: { type: Number, default: 0 } }));
 
 function hesapla(tH, tA, gH, gA) {
-    tH = parseInt(tH); tA = parseInt(tA); gH = parseInt(gH); gA = parseInt(gA);
-    if (tH === tA && gH === gA && tH === gH) return 7;
-    if (tH === gH && tA === gA) return 6;
-    if (tH === tA && gH === gA) return 3;
+    tH = Number(tH); tA = Number(tA); gH = Number(gH); gA = Number(gA);
+    
+    let tahminBerabere = (tH === tA);
+    let gercekBerabere = (gH === gA);
     let dogruKazanan = (tH > tA && gH > gA) || (tH < tA && gH < gA);
-    if (dogruKazanan && (tH === gH || tA === gA)) return 3;
+    let homeGolDogru = (tH === gH);
+    let awayGolDogru = (tA === gA);
+
+    // 1. Beraberlikte Tam Skor (7 Puan)
+    if (tahminBerabere && gercekBerabere && tH === gH) return 7;
+
+    // 2. Galibiyette Tam Skor (6 Puan)
+    if (dogruKazanan && tH === gH && tA === gA) return 6;
+
+    // 3. Beraberliği bilmek (Berabere biteceğini bildi ama skor farklı) - 3 Puan
+    if (tahminBerabere && gercekBerabere) return 3;
+
+    // 4. Kazananı doğru bilip bir takımın golünü bilmek - 3 Puan
+    if (dogruKazanan && (homeGolDogru || awayGolDogru)) return 3;
+
+    // 5. Sadece kazananı bilmek - 2 Puan
     if (dogruKazanan) return 2;
-    if (tH === gH || tA === gA) return 1;
+
+    // 6. Kazananı bilemeyip bir takımın golünü bilmek - 1 Puan
+    if (homeGolDogru || awayGolDogru) return 1;
+
     return 0;
 }
 
