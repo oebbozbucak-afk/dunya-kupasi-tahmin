@@ -11,6 +11,21 @@
         <div class="card">Tarih: <input type="date" id="t" onchange="getMac()" style="width:120px"></div>
         <div id="mList"></div><button onclick="save()">Kaydet</button>
         <div class="card"><h2>Puan Tablosu</h2><div id="tbl"></div></div>
+       <div class="card">
+    <h2>Puanlama Kuralları</h2>
+    <table style="width:100%; border-collapse:collapse; color:white; font-size: 0.9em;">
+        <tr style="border-bottom:1px solid #475569;">
+            <th style="text-align:left; padding:5px;">Durum</th>
+            <th style="text-align:right; padding:5px;">Puan</th>
+        </tr>
+        <tr><td style="padding:5px;">Beraberlikte Tam Skor</td><td style="text-align:right; padding:5px;">7</td></tr>
+        <tr><td style="padding:5px;">Galibiyette Tam Skor</td><td style="text-align:right; padding:5px;">6</td></tr>
+        <tr><td style="padding:5px;">Beraberliği Bilmek</td><td style="text-align:right; padding:5px;">3</td></tr>
+        <tr><td style="padding:5px;">Kazanan + 1 Skor</td><td style="text-align:right; padding:5px;">3</td></tr>
+        <tr><td style="padding:5px;">Sadece Kazananı Bil</td><td style="text-align:right; padding:5px;">2</td></tr>
+        <tr><td style="padding:5px;">Sadece 1 Skor Bil</td><td style="text-align:right; padding:5px;">1</td></tr>
+    </table>
+</div>
         <div class="card"><h2>Tahminleri Gör</h2><button onclick="tahminleriGetir()">Göster</button><div id="tahminListesi"></div></div>
         <div id="admin" class="card" style="border:2px solid red; display:none;">
             <h3>Admin Paneli</h3><input id="sifre" type="password" placeholder="Şifre" style="width:80px"><br>
