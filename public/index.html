@@ -4,6 +4,7 @@
     body{background:#0f172a; color:white; font-family:sans-serif; text-align:center; padding:10px;}
     .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:400px;}
     input{background:#0f172a; color:white; border:1px solid #475569; padding:5px; margin:5px; width:40px;}
+    ul{list-style:none; padding:0;} li{margin-bottom:10px; border-bottom:1px solid #334155; font-size:0.9em;}
 </style></head><body>
     <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" placeholder="İsim" style="width:120px"><br>
     <button onclick="giris()">Giriş Yap</button></div>
@@ -40,8 +41,8 @@
             alert("Kaydedildi!");
         }
         async function tahminleriGetir(){
-            let d = await (await fetch('/api/tum-tahminler')).json();
-            document.getElementById('tahminListesi').innerHTML = d.map(u => `<div><b>${u.isim}:</b> ${JSON.stringify(u.tahminler)}</div>`).join('');
+            let data = await (await fetch('/api/tum-tahminler')).json();
+            document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li><b>${u.isim}:</b><br>` + Object.keys(u.tahminler).map(mId => `<span style="margin-left:15px">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('<br>') + "</li>").join('') + "</ul>";
         }
         async function toplu(){
             let list = document.getElementById('mInput').value.split('\n');

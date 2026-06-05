@@ -38,7 +38,14 @@ app.post('/api/tahmin-kaydet', async (req, res) => {
 
 app.get('/api/maclar/:tarih', async (req, res) => { res.json(await Mac.find({ tarih: req.params.tarih })); });
 app.get('/api/puan-tablosu', async (req, res) => { res.json(await User.find().sort({ puan: -1 })); });
-app.get('/api/tum-tahminler', async (req, res) => { res.json(await User.find({}, 'isim tahminler')); });
+
+app.get('/api/tum-tahminler', async (req, res) => {
+    const users = await User.find({}, 'isim tahminler');
+    const maclar = await Mac.find({}, 'macId isim');
+    const macHaritasi = {};
+    maclar.forEach(m => macHaritasi[m.macId] = m.isim);
+    res.json({ users, macHaritasi });
+});
 
 app.post('/api/admin/mac-ekle', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
@@ -55,16 +62,3 @@ app.post('/api/admin/skor-gir', async (req, res) => {
         for(let mId in u.tahminler) {
             let m = await Mac.findOne({ macId: mId });
             if(m) p += hesapla(u.tahminler[mId].home, u.tahminler[mId].away, m.homeScore, m.awayScore);
-        }
-        await User.updateOne({ _id: u._id }, { puan: p });
-    }
-    res.json({ mesaj: "Puanlar güncellendi!" });
-});
-
-app.post('/api/admin/puan-duzenle', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
-    await User.findOneAndUpdate({ isim: req.body.isim }, { puan: req.body.yeniPuan });
-    res.json({ mesaj: "Puan güncellendi!" });
-});
-
-app.listen(process.env.PORT || 3000);
