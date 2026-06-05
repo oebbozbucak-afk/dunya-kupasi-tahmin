@@ -1,97 +1,28 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head><meta charset="UTF-8"><title>WC 2026 Tahmin</title>
-<style>
-    body{background:#0f172a; color:white; font-family:sans-serif; padding:10px; text-align:center;}
-    .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:500px;}
-    .mac-satir{padding:10px; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;}
-    input, textarea{background:#0f172a; color:white; border:1px solid #475569; padding:5px; text-align:center;}
-</style></head>
-<body>
-    <h1>🏆 FIFA Dünya Kupası 2026</h1>
-    <div class="card" style="border: 1px solid #38bdf8;">
-        <h3>📌 Puanlama Kuralları</h3>
-        <ul style="text-align: left; font-size: 0.8em; line-height: 1.4;">
-            <li>🏆 7 Puan: Beraberliği ve skoru tam bilmek</li>
-            <li>🎯 6 Puan: Skoru ve kazananı tam bilmek</li>
-            <li>🤝 3 Puan: Beraberliği bilmek</li>
-            <li>⚽ 3 Puan: Kazananı bilip, bir takımın golünü tutturmak</li>
-            <li>📈 2 Puan: Sadece kazananı bilmek</li>
-            <li>📉 1 Puan: Kazananı bilemeyip bir takımın golünü tutturmak</li>
-        </ul>
-    </div>
-    <div class="card">
-        <h3>Tarih Seç: <input type="date" id="tarih" onchange="maclariGetir()"></h3>
-        <div id="macListesi"></div>
-        <br><input id="isim" placeholder="Adın">
-        <button onclick="kaydet()">Tahminleri Gönder</button>
-    </div>
-    <div class="card"><h2>Puan Durumu</h2><table id="tbl" style="width:100%"></table></div>
-
-    <div id="admin" class="card" style="display:none; border:2px solid red;">
-        <h3>Admin Paneli</h3>
-        <input id="sifre" type="password" placeholder="Şifre" style="width:100px"><br><br>
-        <textarea id="macListesiInput" placeholder="Tarih,İsim,Id&#10;2026-06-11,Meksika-Güney Afrika,m1" style="width:90%; height:60px"></textarea><br>
-        <button onclick="topluEkle()">Toplu Maçları Yükle</button><br><br>
-        <input id="mid" placeholder="ID" style="width:50px"><input id="sh" placeholder="E" style="width:30px"><input id="sa" placeholder="D" style="width:30px">
-        <button onclick="skorGir()">Skor Gir</button>
-    </div>
-
-    <script>
-        let k=""; window.onkeydown=(e)=>{k+=e.key; if(k.includes("admin"))document.getElementById('admin').style.display='block';};
-        window.onload = () => { document.getElementById('tarih').value = new Date().toISOString().split('T')[0]; maclariGetir(); };
-        
-        async function maclariGetir() {
-            let t = document.getElementById('tarih').value;
-            let res = await fetch('/api/maclar/' + t);
-            let d = await res.json();
-            document.getElementById('macListesi').innerHTML = d.length > 0 ? d.map(m => `
-                <div class="mac-satir" data-id="${m.macId}">${m.isim} <div><input class="h" value="0">-<input class="a" value="0"></div></div>`).join('') : "Bugün maç yok.";
-        }
-
-        async function topluEkle(){
-            let liste = document.getElementById('macListesiInput').value.split('\n');
-            for(let satir of liste){
-                let [tarih, isim, macId] = satir.split(',');
-                await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac: {tarih, isim, macId}})});
-            }
-            alert("İşlem tamam!"); location.reload();
-        }
-
-        async function skorGir(){
-            let res = await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})});
-            let d = await res.json(); alert(d.mesaj); location.reload();
-        }
-
-        async function kaydet(){
-            let t = {}; document.querySelectorAll('.mac-satir').forEach(d=>t[d.dataset.id]={home:d.querySelector('.h').value,away:d.querySelector('.a').value});
-            let res = await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,tahminler:t})});
-            let d = await res.json(); alert(d.mesaj);
-        }
-        
-        fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(o=>`<tr><td>${o.isim}</td><td>${o.puan}</td></tr>`).join(''));
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
 <html lang="tr"><head><meta charset="UTF-8"><title>WC 2026</title>
 <style>
     body{background:#0f172a; color:white; font-family:sans-serif; text-align:center; padding:10px;}
     .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:400px;}
-    input{background:#0f172a; color:white; border:1px solid #475569; padding:5px; margin:5px;}
+    input{background:#0f172a; color:white; border:1px solid #475569; padding:5px; margin:5px; width:60px;}
 </style></head><body>
-    <div id="auth" class="card"><h3>Profil Girişi</h3><input id="isim" placeholder="İsim"><input id="sifre" type="password" placeholder="Şifre"><br>
+    <div id="auth" class="card"><h3>Giriş / Kayıt</h3><input id="isim" placeholder="İsim" style="width:100px"><input id="sifre" type="password" placeholder="Şifre" style="width:100px"><br>
     <button onclick="auth('kayit')">Kayıt</button><button onclick="auth('giris')">Giriş</button></div>
     
     <div id="app" style="display:none">
         <h1>🏆 WC 2026</h1>
-        <div class="card">Tarih: <input type="date" id="t" onchange="getMac()"></div>
+        <div class="card">Tarih: <input type="date" id="t" onchange="getMac()" style="width:120px"></div>
         <div id="mList"></div><button onclick="save()">Kaydet</button>
-        <div class="card"><h2>Sıralama</h2><div id="tbl"></div></div>
+        <div class="card"><h2>Puan Durumu</h2><div id="tbl"></div></div>
+        <div id="admin" class="card" style="border:2px solid red; display:none;">
+            <h3>Admin</h3><textarea id="mInput" placeholder="Tarih,İsim,Id"></textarea><br>
+            <button onclick="toplu()">Ekle</button><hr>
+            <input id="mid" placeholder="ID"><input id="sh" placeholder="E"><input id="sa" placeholder="D"><button onclick="skor()">Skor</button>
+        </div>
     </div>
     
     <script>
         let loggedIsim = "";
+        window.onkeydown=(e)=>{if(e.key==='a')document.getElementById('admin').style.display='block';};
         async function auth(type){
             let d = await (await fetch('/api/'+type, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,sifre:document.getElementById('sifre').value})})).json();
             if(d.mesaj || d.basarili){ loggedIsim = document.getElementById('isim').value; document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; getMac(); }
@@ -99,12 +30,21 @@
         }
         async function getMac(){
             let m = await (await fetch('/api/maclar/'+document.getElementById('t').value)).json();
-            document.getElementById('mList').innerHTML = m.map(x => `<div>${x.isim}: <input class='h' value='0'>-<input class='a' value='0'></div>`).join('');
+            document.getElementById('mList').innerHTML = m.map(x => `<div class='mac' data-id='${x.macId}'>${x.isim}: <input class='h' value='0'>-<input class='a' value='0'></div>`).join('');
         }
         async function save(){
-            let t = {}; document.querySelectorAll('.h').forEach((e,i)=>t[i]={home:e.value, away:document.querySelectorAll('.a')[i].value});
+            let t = {}; document.querySelectorAll('.mac').forEach(x=>{t[x.dataset.id]={home:x.querySelector('.h').value, away:x.querySelector('.a').value}});
             await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:loggedIsim, tahminler:t})});
             alert("Kaydedildi!");
+        }
+        async function toplu(){
+            let list = document.getElementById('mInput').value.split('\n');
+            for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); }
+            alert("Yüklendi");
+        }
+        async function skor(){
+            await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})});
+            alert("Puanlar güncellendi!");
         }
         fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(x=>`<div>${x.isim}: ${x.puan}</div>`).join(''));
     </script>
