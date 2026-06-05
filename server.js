@@ -62,3 +62,16 @@ app.post('/api/admin/skor-gir', async (req, res) => {
         for(let mId in u.tahminler) {
             let m = await Mac.findOne({ macId: mId });
             if(m) p += hesapla(u.tahminler[mId].home, u.tahminler[mId].away, m.homeScore, m.awayScore);
+        }
+        await User.updateOne({ _id: u._id }, { puan: p });
+    }
+    res.json({ mesaj: "Puanlar güncellendi!" });
+});
+
+app.post('/api/admin/puan-duzenle', async (req, res) => {
+    if (req.body.sifre !== "ordu52") return;
+    await User.findOneAndUpdate({ isim: req.body.isim }, { puan: req.body.yeniPuan });
+    res.json({ mesaj: "Puan güncellendi!" });
+});
+
+app.listen(process.env.PORT || 3000);
