@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><meta charset="UTF-8"><title>WC 2026</title>
+<head><meta charset="UTF-8"><title>WC 2026 Tahmin</title>
 <style>
     body{background:#0f172a; color:white; font-family:sans-serif; padding:20px; text-align:center;}
     .card{background:#1e293b; padding:20px; border-radius:10px; margin:10px auto; max-width:500px;}
+    .mac-satir{padding:10px; border-bottom:1px solid #334155; display:flex; justify-content:space-between;}
+    input, textarea{background:#0f172a; color:white; border:1px solid #475569; padding:5px;}
 </style></head>
 <body>
     <h1>🏆 FIFA Dünya Kupası 2026</h1>
     <div class="card">
         <h3>Tarih Seç: <input type="date" id="tarih" onchange="maclariGetir()"></h3>
         <div id="macListesi"></div>
-        <input id="isim" placeholder="Adın">
+        <br><input id="isim" placeholder="Adın">
         <button onclick="kaydet()">Tahminleri Gönder</button>
     </div>
+    
     <div class="card"><h2>Puan Durumu</h2><table id="tbl" style="width:100%"></table></div>
 
+    <div id="admin" class="card" style="display:none; border:2px solid red;">
+        <h3>Admin Paneli</h3>
+        <input id="sifre" type="password" placeholder="Şifre"><br><br>
+        <textarea id="macListesiInput" placeholder="Tarih,İsim,Id&#10;2026-06-11,Meksika-Güney Afrika,m1" style="width:90%; height:80px"></textarea><br>
+        <button onclick="topluEkle()">Toplu Maçları Yükle</button>
+    </div>
+
     <script>
-        // Sayfa yüklendiğinde bugün tarihini ayarla ve maçları getir
+        let k=""; window.onkeydown=(e)=>{k+=e.key; if(k.includes("admin"))document.getElementById('admin').style.display='block';};
+        
         window.onload = () => {
             let bugun = new Date().toISOString().split('T')[0];
             document.getElementById('tarih').value = bugun;
@@ -29,10 +40,21 @@
             let d = await res.json();
             document.getElementById('macListesi').innerHTML = d.length > 0 ? d.map(m => `
                 <div class="mac-satir" data-id="${m.macId}">
-                    ${m.isim}: <input class="h" value="0">-<input class="a" value="0">
-                </div>`).join('') : "Bugün maç yok.";
+                    ${m.isim} <div><input class="h" value="0">-<input class="a" value="0"></div>
+                </div>`).join('') : "Bu tarihte maç yok.";
         }
-        
+
+        async function topluEkle(){
+            let liste = document.getElementById('macListesiInput').value.split('\n');
+            for(let satir of liste){
+                let [tarih, isim, macId] = satir.split(',');
+                await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({sifre:document.getElementById('sifre').value, mac: {tarih, isim, macId}})
+                });
+            }
+            alert("Maçlar yüklendi!"); location.reload();
+        }
+
         async function kaydet(){
             let t = {}; document.querySelectorAll('.mac-satir').forEach(d=>t[d.dataset.id]={home:d.querySelector('.h').value,away:d.querySelector('.a').value});
             let res = await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,tahminler:t})});
