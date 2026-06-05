@@ -28,13 +28,17 @@ app.post('/api/giris', async (req, res) => {
     res.json({ isim: user.isim });
 });
 
-app.post('/api/tahmin-kaydet', async (req, res) => { 
-    await User.findOneAndUpdate({ isim: req.body.isim }, { tahminler: req.body.tahminler }); 
-    res.json({ mesaj: "Kaydedildi!" }); 
+app.post('/api/tahmin-kaydet', async (req, res) => {
+    let user = await User.findOne({ isim: req.body.isim });
+    let mevcutTahminler = user.tahminler || {};
+    Object.assign(mevcutTahminler, req.body.yeniTahminler);
+    await User.findOneAndUpdate({ isim: req.body.isim }, { tahminler: mevcutTahminler });
+    res.json({ mesaj: "Tahminler kaydedildi!" });
 });
 
 app.get('/api/maclar/:tarih', async (req, res) => { res.json(await Mac.find({ tarih: req.params.tarih })); });
 app.get('/api/puan-tablosu', async (req, res) => { res.json(await User.find().sort({ puan: -1 })); });
+app.get('/api/tum-tahminler', async (req, res) => { res.json(await User.find({}, 'isim tahminler')); });
 
 app.post('/api/admin/mac-ekle', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
