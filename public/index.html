@@ -41,9 +41,10 @@
             alert("Kaydedildi!");
         }
         async function tahminleriGetir(){
-            let data = await (await fetch('/api/tum-tahminler')).json();
-            document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li><b>${u.isim}:</b><br>` + Object.keys(u.tahminler).map(mId => `<span style="margin-left:15px">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('<br>') + "</li>").join('') + "</ul>";
-        }
+    let data = await (await fetch('/api/tum-tahminler')).json();
+    // Burada 'data.users' ve 'data.macHaritasi' yapısını kullanıyoruz
+    document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li><b>${u.isim}:</b><br>` + Object.keys(u.tahminler).map(mId => `<span style="margin-left:15px">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('<br>') + "</li>").join('') + "</ul>";
+}
         async function toplu(){
             let list = document.getElementById('mInput').value.split('\n');
             for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); }
