@@ -40,10 +40,31 @@
             await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), yeniTahminler:t})});
             alert("Kaydedildi!");
         }
-        async function tahminleriGetir(){
+       async function tahminleriGetir(){
     let data = await (await fetch('/api/tum-tahminler')).json();
-    // Burada 'data.users' ve 'data.macHaritasi' yapısını kullanıyoruz
-    document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li><b>${u.isim}:</b><br>` + Object.keys(u.tahminler).map(mId => `<span style="margin-left:15px">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('<br>') + "</li>").join('') + "</ul>";
+    let html = "<ul>";
+    
+    data.users.forEach(u => {
+        // GÜVENLİK KONTROLÜ: u.tahminler null veya undefined ise boş obje kullan
+        let tahminler = u.tahminler || {}; 
+        
+        html += `<li><b>${u.isim}:</b><br>`;
+        
+        let keys = Object.keys(tahminler);
+        if (keys.length === 0) {
+            html += `<span style="margin-left:15px; color:#94a3b8;">Henüz tahmin yok</span><br>`;
+        } else {
+            keys.forEach(mId => {
+                let mAdi = data.macHaritasi[mId] || mId;
+                let t = tahminler[mId];
+                html += `<span style="margin-left:15px">${mAdi}: ${t.home}-${t.away}</span><br>`;
+            });
+        }
+        html += "</li>";
+    });
+    
+    html += "</ul>";
+    document.getElementById('tahminListesi').innerHTML = html;
 }
         async function toplu(){
             let list = document.getElementById('mInput').value.split('\n');
