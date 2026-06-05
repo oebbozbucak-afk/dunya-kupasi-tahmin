@@ -5,28 +5,22 @@
     .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:400px;}
     input{background:#0f172a; color:white; border:1px solid #475569; padding:5px; margin:5px; width:60px;}
 </style></head><body>
-    <div id="auth" class="card"><h3>Giriş / Kayıt</h3><input id="isim" placeholder="İsim" style="width:100px"><input id="sifre" type="password" placeholder="Şifre" style="width:100px"><br>
-    <button onclick="auth('kayit')">Kayıt</button><button onclick="auth('giris')">Giriş</button></div>
+    <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" placeholder="İsim" style="width:120px"><br>
+    <button onclick="giris()">Giriş Yap</button></div>
     
     <div id="app" style="display:none">
         <h1>🏆 WC 2026</h1>
         <div class="card">Tarih: <input type="date" id="t" onchange="getMac()" style="width:120px"></div>
-        <div id="mList"></div><button onclick="save()">Kaydet</button>
-        <div class="card"><h2>Puan Durumu</h2><div id="tbl"></div></div>
-        <div id="admin" class="card" style="border:2px solid red; display:none;">
-            <h3>Admin</h3><textarea id="mInput" placeholder="Tarih,İsim,Id"></textarea><br>
-            <button onclick="toplu()">Ekle</button><hr>
-            <input id="mid" placeholder="ID"><input id="sh" placeholder="E"><input id="sa" placeholder="D"><button onclick="skor()">Skor</button>
-        </div>
+        <div id="mList"></div><button onclick="save()">Tahminleri Kaydet</button>
+        <div class="card"><h2>Puan Tablosu</h2><div id="tbl"></div></div>
     </div>
     
     <script>
-        let loggedIsim = "";
-        window.onkeydown=(e)=>{if(e.key==='a')document.getElementById('admin').style.display='block';};
-        async function auth(type){
-            let d = await (await fetch('/api/'+type, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,sifre:document.getElementById('sifre').value})})).json();
-            if(d.mesaj || d.basarili){ loggedIsim = document.getElementById('isim').value; document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; getMac(); }
-            else alert("Hata!");
+        window.onload = () => { let n = localStorage.getItem('isim'); if(n) start(n); };
+        async function giris(){ let n = document.getElementById('isim').value; if(n) { localStorage.setItem('isim', n); start(n); } }
+        async function start(n){ 
+            await fetch('/api/giris', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:n})});
+            document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; getMac(); 
         }
         async function getMac(){
             let m = await (await fetch('/api/maclar/'+document.getElementById('t').value)).json();
@@ -34,17 +28,8 @@
         }
         async function save(){
             let t = {}; document.querySelectorAll('.mac').forEach(x=>{t[x.dataset.id]={home:x.querySelector('.h').value, away:x.querySelector('.a').value}});
-            await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:loggedIsim, tahminler:t})});
+            await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), tahminler:t})});
             alert("Kaydedildi!");
-        }
-        async function toplu(){
-            let list = document.getElementById('mInput').value.split('\n');
-            for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); }
-            alert("Yüklendi");
-        }
-        async function skor(){
-            await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})});
-            alert("Puanlar güncellendi!");
         }
         fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(x=>`<div>${x.isim}: ${x.puan}</div>`).join(''));
     </script>
