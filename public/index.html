@@ -16,20 +16,29 @@
     <div class="card"><h2>Puan Durumu</h2><table id="tbl" style="width:100%"></table></div>
 
     <script>
+        // Sayfa yüklendiğinde bugün tarihini ayarla ve maçları getir
+        window.onload = () => {
+            let bugun = new Date().toISOString().split('T')[0];
+            document.getElementById('tarih').value = bugun;
+            maclariGetir();
+        };
+
         async function maclariGetir() {
             let t = document.getElementById('tarih').value;
             let res = await fetch('/api/maclar/' + t);
             let d = await res.json();
-            document.getElementById('macListesi').innerHTML = d.map(m => `
+            document.getElementById('macListesi').innerHTML = d.length > 0 ? d.map(m => `
                 <div class="mac-satir" data-id="${m.macId}">
                     ${m.isim}: <input class="h" value="0">-<input class="a" value="0">
-                </div>`).join('');
+                </div>`).join('') : "Bugün maç yok.";
         }
+        
         async function kaydet(){
             let t = {}; document.querySelectorAll('.mac-satir').forEach(d=>t[d.dataset.id]={home:d.querySelector('.h').value,away:d.querySelector('.a').value});
-            await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,tahminler:t})});
-            alert("Kaydedildi!");
+            let res = await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,tahminler:t})});
+            let d = await res.json(); alert(d.mesaj);
         }
+        
         fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(o=>`<tr><td>${o.isim}</td><td>${o.puan}</td></tr>`).join(''));
     </script>
 </body>
