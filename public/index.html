@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head><meta charset="UTF-8"><title>WC 2026 Tahmin</title>
-<style>body{background:#0f172a; color:white; font-family:sans-serif; padding:20px; text-align:center;} .card{background:#1e293b; padding:20px; border-radius:10px; margin:10px auto; max-width:500px;}</style></head>
+<style>
+    body{background:#0f172a; color:white; font-family:sans-serif; padding:20px; text-align:center;} 
+    .card{background:#1e293b; padding:20px; border-radius:10px; margin:10px auto; max-width:600px;}
+    .mac-satir{display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #334155;}
+    input{width:40px; text-align:center;}
+</style></head>
 <body>
-    <h1>🏆 WC 2026</h1>
+    <h1>🏆 Dünya Kupası 2026 Fikstürü</h1>
     <div class="card"><h2>Puan Tablosu</h2><table id="tbl" style="width:100%"></table></div>
     <div class="card">
-        <input id="isim" placeholder="Adın"><br><br>
+        <h3>Gelecek Maçlar</h3>
         <div id="maclar">
-            <div data-id="mac1">Kanada-ABD: <input class="h" value="0">-<input class="a" value="0"></div>
-            <div data-id="mac2">Meksika-PlayoffA: <input class="h" value="0">-<input class="a" value="0"></div>
-            <div data-id="mac3">Arjantin-Fransa: <input class="h" value="0">-<input class="a" value="0"></div>
-            <div data-id="mac4">Brezilya-Almanya: <input class="h" value="0">-<input class="a" value="0"></div>
+            <div class="mac-satir" data-id="m1"><span>11 Haz 16:00 | Meksika-Angola</span> <div><input class="h" value="0">-<input class="a" value="0"></div></div>
+            <div class="mac-satir" data-id="m2"><span>12 Haz 19:00 | Türkiye-Uruguay</span> <div><input class="h" value="0">-<input class="a" value="0"></div></div>
+            <div class="mac-satir" data-id="m3"><span>13 Haz 22:00 | ABD-Japonya</span> <div><input class="h" value="0">-<input class="a" value="0"></div></div>
+            <div class="mac-satir" data-id="m4"><span>14 Haz 15:00 | Almanya-Fas</span> <div><input class="h" value="0">-<input class="a" value="0"></div></div>
         </div>
-        <button onclick="kaydet()">Tahminleri Gönder</button>
+        <br><button onclick="kaydet()">Tahminleri Kaydet</button>
     </div>
+
     <div id="admin" class="card" style="display:none; border:2px solid red;">
         <h3>Admin Paneli</h3>
         <input id="sifre" type="password" placeholder="Şifre">
+        <select id="mid">
+            <option value="m1">Meksika-Angola</option>
+            <option value="m2">Türkiye-Uruguay</option>
+            <option value="m3">ABD-Japonya</option>
+            <option value="m4">Almanya-Fas</option>
+        </select>
+        <input id="sh" placeholder="E" style="width:30px"><input id="sa" placeholder="D" style="width:30px">
+        <button onclick="admin()">Skor Gir</button>
         <hr>
-        <h4>Maç Sonucu Gir</h4>
-        <select id="mid"><option value="mac1">Kanada-ABD</option><option value="mac2">Meksika-PlayoffA</option><option value="mac3">Arjantin-Fransa</option><option value="mac4">Brezilya-Almanya</option></select>
-        <input id="sh" placeholder="Ev" style="width:40px"><input id="sa" placeholder="Dep" style="width:40px">
-        <button onclick="admin()">Güncelle</button>
-        <hr>
-        <h4>Puanı Elle Düzenle</h4>
-        <input id="duzeltIsim" placeholder="Kullanıcı Adı">
-        <input id="duzeltPuan" type="number" placeholder="Yeni Puan" style="width:60px">
-        <button onclick="puanDuzelt()">Puanı Güncelle</button>
+        <h4>Puan Düzelt</h4>
+        <input id="duzeltIsim" placeholder="İsim">
+        <input id="duzeltPuan" type="number" placeholder="Puan" style="width:50px">
+        <button onclick="puanDuzelt()">Güncelle</button>
     </div>
+    
     <script>
         let k=""; window.onkeydown=(e)=>{k+=e.key; if(k.includes("admin"))document.getElementById('admin').style.display='block';};
         async function kaydet(){
