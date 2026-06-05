@@ -73,3 +73,39 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="UTF-8"><title>WC 2026</title>
+<style>
+    body{background:#0f172a; color:white; font-family:sans-serif; text-align:center; padding:10px;}
+    .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:400px;}
+    input{background:#0f172a; color:white; border:1px solid #475569; padding:5px; margin:5px;}
+</style></head><body>
+    <div id="auth" class="card"><h3>Profil Girişi</h3><input id="isim" placeholder="İsim"><input id="sifre" type="password" placeholder="Şifre"><br>
+    <button onclick="auth('kayit')">Kayıt</button><button onclick="auth('giris')">Giriş</button></div>
+    
+    <div id="app" style="display:none">
+        <h1>🏆 WC 2026</h1>
+        <div class="card">Tarih: <input type="date" id="t" onchange="getMac()"></div>
+        <div id="mList"></div><button onclick="save()">Kaydet</button>
+        <div class="card"><h2>Sıralama</h2><div id="tbl"></div></div>
+    </div>
+    
+    <script>
+        let loggedIsim = "";
+        async function auth(type){
+            let d = await (await fetch('/api/'+type, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:document.getElementById('isim').value,sifre:document.getElementById('sifre').value})})).json();
+            if(d.mesaj || d.basarili){ loggedIsim = document.getElementById('isim').value; document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; getMac(); }
+            else alert("Hata!");
+        }
+        async function getMac(){
+            let m = await (await fetch('/api/maclar/'+document.getElementById('t').value)).json();
+            document.getElementById('mList').innerHTML = m.map(x => `<div>${x.isim}: <input class='h' value='0'>-<input class='a' value='0'></div>`).join('');
+        }
+        async function save(){
+            let t = {}; document.querySelectorAll('.h').forEach((e,i)=>t[i]={home:e.value, away:document.querySelectorAll('.a')[i].value});
+            await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:loggedIsim, tahminler:t})});
+            alert("Kaydedildi!");
+        }
+        fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(x=>`<div>${x.isim}: ${x.puan}</div>`).join(''));
+    </script>
+</body></html>
