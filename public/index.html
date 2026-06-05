@@ -4,31 +4,25 @@
     body{background:#0f172a; color:white; font-family:sans-serif; text-align:center; padding:10px;}
     .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:400px;}
     input{background:#0f172a; color:white; border:1px solid #475569; padding:5px; margin:5px; width:40px;}
-    ul{list-style:none; padding:0;} li{margin-bottom:10px; border-bottom:1px solid #334155; font-size:0.9em;}
 </style></head><body>
-    <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" placeholder="İsim" style="width:120px"><br>
-    <button onclick="giris()">Giriş Yap</button></div>
-    
+    <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" placeholder="İsim" style="width:120px"><br><button onclick="giris()">Giriş Yap</button></div>
     <div id="app" style="display:none">
         <h1>🏆 WC 2026</h1>
         <div class="card">Tarih: <input type="date" id="t" onchange="getMac()" style="width:120px"></div>
         <div id="mList"></div><button onclick="save()">Kaydet</button>
         <div class="card"><h2>Puan Tablosu</h2><div id="tbl"></div></div>
         <div class="card"><h2>Tahminleri Gör</h2><button onclick="tahminleriGetir()">Göster</button><div id="tahminListesi"></div></div>
-        
         <div id="admin" class="card" style="border:2px solid red; display:none;">
             <h3>Admin Paneli</h3><input id="sifre" type="password" placeholder="Şifre" style="width:80px"><br>
-            <textarea id="mInput" placeholder="Tarih,İsim,Id"></textarea><br>
-            <button onclick="toplu()">Maç Ekle</button><hr>
+            <textarea id="mInput" placeholder="Tarih,İsim,Id"></textarea><br><button onclick="toplu()">Maç Ekle</button><hr>
             <input id="mid" placeholder="ID"><input id="sh" placeholder="E"><input id="sa" placeholder="D"><button onclick="skor()">Skor Gir</button><br>
-            <input id="uIsim" placeholder="İsim"><input id="uPuan" placeholder="Puan"><button onclick="puanDuzenle()">Puan Düzenle</button>
+            <input id="uIsim" placeholder="İsim"><input id="uPuan" placeholder="Puan"><button onclick="puanDuzenle()">Puan Düzenle</button><hr>
+            <input id="silIsim" placeholder="Silinecek İsim"><button onclick="kullaniciSil()">Kullanıcıyı Sil</button>
         </div>
     </div>
-    
     <script>
         window.onload = () => { document.getElementById('t').value = new Date().toISOString().split('T')[0]; let n = localStorage.getItem('isim'); if(n) start(n); };
         window.onkeydown=(e)=>{if(e.key==='a')document.getElementById('admin').style.display='block';};
-
         async function giris(){ let n = document.getElementById('isim').value; if(n) { localStorage.setItem('isim', n); start(n); } }
         async function start(n){ await fetch('/api/giris', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:n})}); document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; getMac(); }
         async function getMac(){
@@ -40,32 +34,10 @@
             await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), yeniTahminler:t})});
             alert("Kaydedildi!");
         }
-       async function tahminleriGetir(){
-    let data = await (await fetch('/api/tum-tahminler')).json();
-    let html = "<ul>";
-    
-    data.users.forEach(u => {
-        // GÜVENLİK KONTROLÜ: u.tahminler null veya undefined ise boş obje kullan
-        let tahminler = u.tahminler || {}; 
-        
-        html += `<li><b>${u.isim}:</b><br>`;
-        
-        let keys = Object.keys(tahminler);
-        if (keys.length === 0) {
-            html += `<span style="margin-left:15px; color:#94a3b8;">Henüz tahmin yok</span><br>`;
-        } else {
-            keys.forEach(mId => {
-                let mAdi = data.macHaritasi[mId] || mId;
-                let t = tahminler[mId];
-                html += `<span style="margin-left:15px">${mAdi}: ${t.home}-${t.away}</span><br>`;
-            });
+        async function tahminleriGetir(){
+            let data = await (await fetch('/api/tum-tahminler')).json();
+            document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li><b>${u.isim}:</b><br>` + Object.keys(u.tahminler || {}).map(mId => `<span style="margin-left:15px">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('<br>') + "</li>").join('') + "</ul>";
         }
-        html += "</li>";
-    });
-    
-    html += "</ul>";
-    document.getElementById('tahminListesi').innerHTML = html;
-}
         async function toplu(){
             let list = document.getElementById('mInput').value.split('\n');
             for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); }
@@ -78,6 +50,10 @@
         async function puanDuzenle(){
             await fetch('/api/admin/puan-duzenle', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uIsim').value, yeniPuan:document.getElementById('uPuan').value})});
             alert("Güncellendi!"); location.reload();
+        }
+        async function kullaniciSil(){
+            await fetch('/api/admin/kullanici-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('silIsim').value})});
+            alert("Silindi!"); location.reload();
         }
         fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(x=>`<div>${x.isim}: ${x.puan}</div>`).join(''));
     </script>
