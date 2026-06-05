@@ -43,7 +43,23 @@ app.get('/api/maclar/:tarih', async (req, res) => {
 app.post('/api/admin/mac-ekle', async (req, res) => {
     if (req.body.sifre !== "ordu52") return res.status(403).send("Hatalı şifre!");
     await Mac.findOneAndUpdate({ macId: req.body.mac.macId }, req.body.mac, { upsert: true });
-    res.json({ mesaj: "Maç kaydedildi!" });
+    res.json({ mesaj: "Maç eklendi!" });
+});
+
+app.post('/api/admin/skor-gir', async (req, res) => {
+    if (req.body.sifre !== "ordu52") return res.status(403).send("Hatalı şifre!");
+    const { macId, homeScore, awayScore } = req.body;
+    await Mac.findOneAndUpdate({ macId }, { homeScore, awayScore });
+    const tahminler = await Tahmin.find();
+    for(let t of tahminler) {
+        let yeniPuan = 0;
+        for(let mId in t.tahminler) {
+            let m = await Mac.findOne({ macId: mId });
+            if(m) yeniPuan += hesapla(t.tahminler[mId].home, t.tahminler[mId].away, m.homeScore, m.awayScore);
+        }
+        await Tahmin.updateOne({ _id: t._id }, { puan: yeniPuan });
+    }
+    res.json({ mesaj: "Skor girildi ve puanlar güncellendi!" });
 });
 
 app.get('/api/puan-tablosu', async (req, res) => {

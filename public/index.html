@@ -5,7 +5,7 @@
     body{background:#0f172a; color:white; font-family:sans-serif; padding:10px; text-align:center;}
     .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:500px;}
     .mac-satir{padding:10px; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center;}
-    input, textarea{background:#0f172a; color:white; border:1px solid #475569; padding:5px; width:40px; text-align:center;}
+    input, textarea{background:#0f172a; color:white; border:1px solid #475569; padding:5px; text-align:center;}
 </style></head>
 <body>
     <h1>🏆 FIFA Dünya Kupası 2026</h1>
@@ -21,9 +21,9 @@
         </ul>
     </div>
     <div class="card">
-        <h3>Tarih Seç: <input type="date" id="tarih" style="width:120px" onchange="maclariGetir()"></h3>
+        <h3>Tarih Seç: <input type="date" id="tarih" onchange="maclariGetir()"></h3>
         <div id="macListesi"></div>
-        <br><input id="isim" placeholder="Adın" style="width:100px">
+        <br><input id="isim" placeholder="Adın">
         <button onclick="kaydet()">Tahminleri Gönder</button>
     </div>
     <div class="card"><h2>Puan Durumu</h2><table id="tbl" style="width:100%"></table></div>
@@ -31,8 +31,10 @@
     <div id="admin" class="card" style="display:none; border:2px solid red;">
         <h3>Admin Paneli</h3>
         <input id="sifre" type="password" placeholder="Şifre" style="width:100px"><br><br>
-        <textarea id="macListesiInput" placeholder="Tarih,İsim,Id" style="width:90%; height:60px"></textarea><br>
-        <button onclick="topluEkle()">Toplu Maçları Yükle</button>
+        <textarea id="macListesiInput" placeholder="Tarih,İsim,Id&#10;2026-06-11,Meksika-Güney Afrika,m1" style="width:90%; height:60px"></textarea><br>
+        <button onclick="topluEkle()">Toplu Maçları Yükle</button><br><br>
+        <input id="mid" placeholder="ID" style="width:50px"><input id="sh" placeholder="E" style="width:30px"><input id="sa" placeholder="D" style="width:30px">
+        <button onclick="skorGir()">Skor Gir</button>
     </div>
 
     <script>
@@ -51,11 +53,14 @@
             let liste = document.getElementById('macListesiInput').value.split('\n');
             for(let satir of liste){
                 let [tarih, isim, macId] = satir.split(',');
-                await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({sifre:document.getElementById('sifre').value, mac: {tarih, isim, macId}})
-                });
+                await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac: {tarih, isim, macId}})});
             }
-            alert("Maçlar yüklendi!"); location.reload();
+            alert("İşlem tamam!"); location.reload();
+        }
+
+        async function skorGir(){
+            let res = await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})});
+            let d = await res.json(); alert(d.mesaj); location.reload();
         }
 
         async function kaydet(){
