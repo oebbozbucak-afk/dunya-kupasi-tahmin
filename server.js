@@ -10,6 +10,7 @@ mongoose.connect(uri);
 const User = mongoose.model('User', new mongoose.Schema({ isim: { type: String, unique: true }, puan: { type: Number, default: 0 }, tahminler: Object }));
 const Mac = mongoose.model('Mac', new mongoose.Schema({ tarih: String, isim: String, macId: { type: String, unique: true }, homeScore: { type: Number, default: 0 }, awayScore: { type: Number, default: 0 } }));
 
+// Puan Hesaplama Fonksiyonu
 function hesapla(tH, tA, gH, gA) {
     tH = parseInt(tH); tA = parseInt(tA); gH = parseInt(gH); gA = parseInt(gA);
     if (tH === tA && gH === gA && tH === gH) return 7;
@@ -36,6 +37,7 @@ app.post('/api/tahmin-kaydet', async (req, res) => {
 app.get('/api/maclar/:tarih', async (req, res) => { res.json(await Mac.find({ tarih: req.params.tarih })); });
 app.get('/api/puan-tablosu', async (req, res) => { res.json(await User.find().sort({ puan: -1 })); });
 
+// --- Admin İşlemleri ---
 app.post('/api/admin/mac-ekle', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
     await Mac.findOneAndUpdate({ macId: req.body.mac.macId }, req.body.mac, { upsert: true });
@@ -54,7 +56,14 @@ app.post('/api/admin/skor-gir', async (req, res) => {
         }
         await User.updateOne({ _id: u._id }, { puan: p });
     }
-    res.json({ mesaj: "Puanlar güncellendi!" });
+    res.json({ mesaj: "Puanlar hesaplandı!" });
+});
+
+// YENİ: Manuel Puan Düzenleme
+app.post('/api/admin/puan-duzenle', async (req, res) => {
+    if (req.body.sifre !== "ordu52") return;
+    await User.findOneAndUpdate({ isim: req.body.isim }, { puan: req.body.yeniPuan });
+    res.json({ mesaj: "Puan başarıyla güncellendi!" });
 });
 
 app.listen(process.env.PORT || 3000);
