@@ -78,6 +78,20 @@
         async function skor(){ await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})}); alert("Güncellendi!"); location.reload(); }
         async function puanDuzenle(){ await fetch('/api/admin/puan-duzenle', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uIsim').value, yeniPuan:document.getElementById('uPuan').value})}); alert("Güncellendi!"); location.reload(); }
         async function kullaniciSil(){ await fetch('/api/admin/kullanici-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('silIsim').value})}); alert("Silindi!"); location.reload(); }
-        fetch('/api/puan-tablosu').then(r=>r.json()).then(d=>document.getElementById('tbl').innerHTML=d.map(x=>`<div>${x.isim}: ${x.puan}</div>`).join(''));
-    </script>
+fetch('/api/puan-tablosu')
+    .then(r => r.json())
+    .then(d => {
+        document.getElementById('tbl').innerHTML = d.map((x, i) => {
+            let icon = "";
+            if (i === 0) icon = "🥇 ";
+            else if (i === 1) icon = "🥈 ";
+            else if (i === 2) icon = "🥉 ";
+            else if (i === d.length - 1 && d.length > 3) icon = "💩 ";
+            
+            return `<div style="padding: 8px; border-bottom: 1px solid #334155;">
+                ${icon} <b>${x.isim}</b>: ${x.puan}
+            </div>`;
+        }).join('');
+    });
+</script>
 </body></html>
