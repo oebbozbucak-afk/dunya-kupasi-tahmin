@@ -7,7 +7,12 @@ app.use(express.static('public'));
 const uri = process.env.MONGODB_URI || 'mongodb+srv://bahadir:Parola123@cluster0.nbchjpc.mongodb.net/dunya_kupasi?retryWrites=true&w=majority';
 mongoose.connect(uri);
 
-const User = mongoose.model('User', new mongoose.Schema({ isim: { type: String, unique: true }, puan: { type: Number, default: 0 }, tahminler: Object }));
+const User = mongoose.model('User', new mongoose.Schema({ 
+    isim: { type: String, unique: true }, 
+    puan: { type: Number, default: 0 }, 
+    tahminler: Object,
+    turnuvaTahmin: String 
+}));
 const Mac = mongoose.model('Mac', new mongoose.Schema({ tarih: String, isim: String, macId: { type: String, unique: true }, homeScore: { type: Number, default: 0 }, awayScore: { type: Number, default: 0 } }));
 
 function hesapla(tH, tA, gH, gA) {
@@ -35,10 +40,15 @@ app.post('/api/tahmin-kaydet', async (req, res) => {
     res.json({ mesaj: "Tahminler kaydedildi!" });
 });
 
+app.post('/api/turnuva-tahmin', async (req, res) => {
+    await User.findOneAndUpdate({ isim: req.body.isim }, { turnuvaTahmin: req.body.tahmin });
+    res.json({ mesaj: "Tahmin kaydedildi!" });
+});
+
 app.get('/api/maclar/:tarih', async (req, res) => { res.json(await Mac.find({ tarih: req.params.tarih })); });
 app.get('/api/puan-tablosu', async (req, res) => { res.json(await User.find().sort({ puan: -1 })); });
 app.get('/api/tum-tahminler', async (req, res) => {
-    const users = await User.find({}, 'isim tahminler');
+    const users = await User.find({}, 'isim tahminler turnuvaTahmin');
     const maclar = await Mac.find({}, 'macId isim');
     const macHaritasi = {};
     maclar.forEach(m => macHaritasi[m.macId] = m.isim);
@@ -53,17 +63,4 @@ app.post('/api/admin/mac-ekle', async (req, res) => {
 
 app.post('/api/admin/skor-gir', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
-    await Mac.findOneAndUpdate({ macId: req.body.macId }, { homeScore: req.body.homeScore, awayScore: req.body.awayScore });
-    const users = await User.find();
-    for(let u of users) {
-        let yeniPuan = 0;
-        for(let mId in u.tahminler) {
-            let m = await Mac.findOne({ macId: mId });
-            if(m) yeniPuan += hesapla(u.tahminler[mId].home, u.tahminler[mId].away, m.homeScore, m.awayScore);
-        }
-        await User.updateOne({ _id: u._id }, { puan: yeniPuan });
-    }
-    res.json({ mesaj: "Skor ve puanlar güncellendi!" });
-});
-
-app.post('/api/admin/puan-duzenle
+    await Mac.findOneAndUpdate({ macId: req.body.macId }, { homeScore:
