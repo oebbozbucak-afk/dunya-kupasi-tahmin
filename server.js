@@ -77,6 +77,19 @@ app.post('/api/admin/skor-gir', async (req, res) => {
     res.json({ mesaj: "Güncellendi" });
 });
 
+// Admin Silme Komutları
+app.post('/api/admin/mac-sil', async (req, res) => {
+    if (req.body.sifre !== "ordu52") return;
+    await Mac.findOneAndDelete({ macId: req.body.macId });
+    res.json({ mesaj: "Maç silindi!" });
+});
+
+app.post('/api/admin/turnuva-temizle', async (req, res) => {
+    if (req.body.sifre !== "ordu52") return;
+    await User.updateMany({}, { turnuvaTahminleri: null });
+    res.json({ mesaj: "Tüm turnuva tahminleri sıfırlandı!" });
+});
+
 app.post('/api/admin/puan-duzenle', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
     await User.findOneAndUpdate({ isim: req.body.isim }, { puan: req.body.yeniPuan });

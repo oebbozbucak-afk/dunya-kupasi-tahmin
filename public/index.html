@@ -20,19 +20,13 @@
             <button onclick="saveTurnuva()">Turnuva Tahminini Kaydet</button>
         </div>
         <div class="card"><h2>Puan Tablosu</h2><div id="tbl"></div></div>
-        <div class="card">
-            <h2>Puanlama Kuralları</h2>
-            <div style="text-align: left; font-size: 0.9em; line-height: 1.6;">
-                • Beraberlik ve skoru bilmek: 7 puan<br> • Kazanan ve skoru bilmek: 6 puan<br>
-                • Sadece Beraberlik bilmek: 3 puan<br> • Kazananı bilip bir takımın golünü bilmek: 3 puan<br>
-                • Kazananı bilmek: 2 puan<br> • Sadece bir tarafın golünü bilmek: 1 puan
-            </div>
-        </div>
         <div class="card"><h2>Tahminleri Gör</h2><button onclick="tahminleriGetir()">Göster</button><div id="tahminListesi"></div></div>
         <div id="admin" class="card" style="border:2px solid red; display:none;">
             <h3>Admin Paneli</h3><input id="sifre" type="password" placeholder="Şifre" style="width:80px"><br>
             <textarea id="mInput" placeholder="Tarih,İsim,Id"></textarea><br><button onclick="toplu()">Maç Ekle</button><hr>
-            <input id="mid" placeholder="ID"><input id="sh" placeholder="E"><input id="sa" placeholder="D"><button onclick="skor()">Skor Gir</button><br>
+            <input id="mid" placeholder="Maç ID"><button onclick="macSil()">Maç Sil</button><br>
+            <input id="sh" placeholder="E"><input id="sa" placeholder="D"><button onclick="skor()">Skor Gir</button><br>
+            <button onclick="turnuvaTemizle()">Turnuva Tahminlerini Sıfırla</button><hr>
             <input id="uIsim" placeholder="İsim"><input id="uPuan" placeholder="Puan"><button onclick="puanDuzenle()">Puan Düzenle</button><hr>
             <input id="silIsim" placeholder="Silinecek İsim"><button onclick="kullaniciSil()">Kullanıcıyı Sil</button>
         </div>
@@ -47,6 +41,8 @@
         async function saveTurnuva(){ let t = {s1:document.getElementById('s1').value,s2:document.getElementById('s2').value,s3:document.getElementById('s3').value,s4:document.getElementById('s4').value,oyuncu:document.getElementById('oyuncu').value,kaleci:document.getElementById('kaleci').value,genc:document.getElementById('genc').value}; await fetch('/api/turnuva-tahmin', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), tahminler:t})}); alert("Kaydedildi!"); }
         async function tahminleriGetir(){ let data = await (await fetch('/api/tum-tahminler')).json(); document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li style='text-align:left; margin-bottom:10px;'><b>${u.isim}:</b><br>${u.turnuvaTahminleri ? `<small style='color:#38bdf8'>Şampiyon:${u.turnuvaTahminleri.s1}, ${u.turnuvaTahminleri.s2}, ${u.turnuvaTahminleri.s3}, ${u.turnuvaTahminleri.s4}<br>Ödüller: ${u.turnuvaTahminleri.oyuncu}, ${u.turnuvaTahminleri.kaleci}, ${u.turnuvaTahminleri.genc}</small><br>` : ""}` + Object.keys(u.tahminler || {}).map(mId => `<span style="margin-left:15px">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('<br>') + "</li>").join('') + "</ul>"; }
         async function toplu(){ let list = document.getElementById('mInput').value.split('\n'); for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); } alert("Yüklendi!"); location.reload(); }
+        async function macSil(){ await fetch('/api/admin/mac-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value})}); alert("Maç silindi!"); location.reload(); }
+        async function turnuvaTemizle(){ await fetch('/api/admin/turnuva-temizle', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value})}); alert("Temizlendi!"); location.reload(); }
         async function skor(){ await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})}); alert("Güncellendi!"); location.reload(); }
         async function puanDuzenle(){ await fetch('/api/admin/puan-duzenle', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uIsim').value, yeniPuan:document.getElementById('uPuan').value})}); alert("Güncellendi!"); location.reload(); }
         async function kullaniciSil(){ await fetch('/api/admin/kullanici-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('silIsim').value})}); alert("Silindi!"); location.reload(); }
