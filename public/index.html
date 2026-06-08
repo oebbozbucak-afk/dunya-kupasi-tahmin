@@ -10,7 +10,7 @@
     button:hover { filter: brightness(1.2); transform: translateY(-2px); }
     .mac { display: flex; align-items: center; justify-content: space-between; background: #334155; padding: 10px 15px; margin: 8px 0; border-radius: 10px; }
     ul { list-style: none; padding: 0; }
-    li { background: #334155; padding: 10px; margin-bottom: 8px; border-radius: 8px; text-align: left; }
+    li { background: #334155; padding: 15px; margin-bottom: 10px; border-radius: 12px; text-align: left; }
 </style></head><body>
     <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" style="width:150px" placeholder="Adınız"><br><button onclick="giris()">Giriş Yap</button></div>
     <div id="app" style="display:none">
@@ -43,10 +43,23 @@
         window.onkeydown=(e)=>{if(e.key==='a')document.getElementById('admin').style.display='block';};
         async function giris(){ let n = document.getElementById('isim').value; if(n) { localStorage.setItem('isim', n); start(n); } }
         async function start(n){ await fetch('/api/giris', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:n})}); document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; getMac(); }
-        async function getMac(){ let m = await (await fetch('/api/maclar/'+document.getElementById('t').value)).json(); document.getElementById('mList').innerHTML = m.map(x => `<div class='mac'><span>${x.isim}</span><div><input class='h' value='0'>-<input class='a' value='0'></div></div>`).join(''); }
-        async function save(){ let t = {}; document.querySelectorAll('.mac').forEach((x,i)=>{let id=document.querySelectorAll('.mac')[i].dataset.id; t[id]={home:x.querySelector('.h').value, away:x.querySelector('.a').value}}); await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), yeniTahminler:t})}); alert("Kaydedildi!"); }
+        async function getMac(){ let m = await (await fetch('/api/maclar/'+document.getElementById('t').value)).json(); document.getElementById('mList').innerHTML = m.map(x => `<div class='mac' data-id='${x.macId}'><span>${x.isim}</span><div><input class='h' value='0'>-<input class='a' value='0'></div></div>`).join(''); }
+        async function save(){ let t = {}; document.querySelectorAll('.mac').forEach(x=>{t[x.dataset.id]={home:x.querySelector('.h').value, away:x.querySelector('.a').value}}); await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), yeniTahminler:t})}); alert("Kaydedildi!"); }
         async function saveTurnuva(){ let t = {s1:document.getElementById('s1').value,s2:document.getElementById('s2').value,s3:document.getElementById('s3').value,s4:document.getElementById('s4').value,oyuncu:document.getElementById('oyuncu').value,kaleci:document.getElementById('kaleci').value,genc:document.getElementById('genc').value,golKrali:document.getElementById('golKrali').value}; await fetch('/api/turnuva-tahmin', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), tahminler:t})}); alert("Kaydedildi!"); }
-        async function tahminleriGetir(){ let data = await (await fetch('/api/tum-tahminler')).json(); document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li><b>${u.isim}:</b><br>${u.turnuvaTahminleri ? `<small style='color:var(--primary)'>Şampiyon: ${Object.values(u.turnuvaTahminleri).slice(0,4).join(', ')}</small><br>` : ""}` + Object.keys(u.tahminler || {}).map(mId => `${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}`).join(', ') + "</li>").join('') + "</ul>"; }
+        async function tahminleriGetir(){ 
+            let data = await (await fetch('/api/tum-tahminler')).json(); 
+            document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => {
+                let t = u.turnuvaTahminleri || {};
+                return `<li><b>${u.isim}:</b><br>
+                    <small style='color:var(--primary)'>
+                        Şampiyon: ${t.s1||'-'}, ${t.s2||'-'}, ${t.s3||'-'}, ${t.s4||'-'}<br>
+                        Oyuncu: ${t.oyuncu||'-'} | Kaleci: ${t.kaleci||'-'}<br>
+                        Genç: ${t.genc||'-'} | Gol Kralı: ${t.golKrali||'-'}
+                    </small><br>
+                    ${Object.keys(u.tahminler || {}).map(mId => `<span style="display:block; margin-top:5px;">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('')}
+                </li>`;
+            }).join('') + "</ul>"; 
+        }
         async function toplu(){ let list = document.getElementById('mInput').value.split('\n'); for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); } alert("Yüklendi!"); location.reload(); }
         async function tahminSil(){ await fetch('/api/admin/tahmin-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uTahminSil').value})}); alert("Silindi!"); location.reload(); }
         async function skor(){ await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})}); alert("Güncellendi!"); location.reload(); }
