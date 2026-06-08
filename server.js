@@ -11,7 +11,7 @@ const User = mongoose.model('User', new mongoose.Schema({
     isim: { type: String, unique: true }, 
     puan: { type: Number, default: 0 }, 
     tahminler: Object,
-    turnuvaTahmin: String 
+    turnuvaTahminleri: Object 
 }));
 const Mac = mongoose.model('Mac', new mongoose.Schema({ tarih: String, isim: String, macId: { type: String, unique: true }, homeScore: { type: Number, default: 0 }, awayScore: { type: Number, default: 0 } }));
 
@@ -41,14 +41,15 @@ app.post('/api/tahmin-kaydet', async (req, res) => {
 });
 
 app.post('/api/turnuva-tahmin', async (req, res) => {
-    await User.findOneAndUpdate({ isim: req.body.isim }, { turnuvaTahmin: req.body.tahmin });
-    res.json({ mesaj: "Tahmin kaydedildi!" });
+    if (new Date() > new Date('2026-06-11')) return res.status(400).json({mesaj: "Süre doldu!"});
+    await User.findOneAndUpdate({ isim: req.body.isim }, { turnuvaTahminleri: req.body.tahminler });
+    res.json({ mesaj: "Tahminler kaydedildi!" });
 });
 
 app.get('/api/maclar/:tarih', async (req, res) => { res.json(await Mac.find({ tarih: req.params.tarih })); });
 app.get('/api/puan-tablosu', async (req, res) => { res.json(await User.find().sort({ puan: -1 })); });
 app.get('/api/tum-tahminler', async (req, res) => {
-    const users = await User.find({}, 'isim tahminler turnuvaTahmin');
+    const users = await User.find({}, 'isim tahminler turnuvaTahminleri');
     const maclar = await Mac.find({}, 'macId isim');
     const macHaritasi = {};
     maclar.forEach(m => macHaritasi[m.macId] = m.isim);
