@@ -11,6 +11,8 @@
     .mac { display: flex; align-items: center; justify-content: space-between; background: #334155; padding: 10px 15px; margin: 8px 0; border-radius: 10px; }
     ul { list-style: none; padding: 0; }
     li { background: #334155; padding: 15px; margin-bottom: 10px; border-radius: 12px; text-align: left; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+    td { padding: 5px; border-bottom: 1px solid #475569; }
 </style></head><body>
     <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" style="width:150px" placeholder="Adınız"><br><button onclick="giris()">Giriş Yap</button></div>
     <div id="app" style="display:none">
@@ -28,6 +30,17 @@
             <button onclick="saveTurnuva()">Tahminleri Kaydet</button>
         </div>
         <div class="card"><h2>Puan Tablosu</h2><div id="tbl"></div></div>
+        <div class="card">
+            <h2>Puanlama Kuralları</h2>
+            <table>
+                <tr><td>Beraberlik+Skor</td><td>7</td></tr>
+                <tr><td>Kazanan+Skor</td><td>6</td></tr>
+                <tr><td>Beraberlik</td><td>3</td></tr>
+                <tr><td>Kazanan+1Gol</td><td>3</td></tr>
+                <tr><td>Sadece Kazanan</td><td>2</td></tr>
+                <tr><td>Sadece 1 Gol</td><td>1</td></tr>
+            </table>
+        </div>
         <div class="card"><h2>Tahminleri Gör</h2><button onclick="tahminleriGetir()">Göster</button><div id="tahminListesi" style="margin-top:15px;"></div></div>
         <div id="admin" class="card" style="border:2px solid #ef4444; display:none;">
             <h3>Admin Paneli</h3><input id="sifre" type="password" placeholder="Şifre" style="width:100px"><br>
