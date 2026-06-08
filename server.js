@@ -46,7 +46,6 @@ app.post('/api/turnuva-tahmin', async (req, res) => {
     res.json({ mesaj: "Tahminler kaydedildi!" });
 });
 
-// ADMIN KOMUTLARI
 app.post('/api/admin/tahmin-sil', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
     await User.findOneAndUpdate({ isim: req.body.isim }, { tahminler: {} });
