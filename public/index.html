@@ -8,9 +8,12 @@
     input { background: #0f172a; color: white; border: 1px solid #475569; padding: 10px; margin: 5px; border-radius: 8px; width: 60px; outline: none; }
     button { background: var(--primary); color: #0f172a; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; margin-top: 10px; }
     button:hover { filter: brightness(1.2); transform: translateY(-2px); }
-    .mac { display: flex; align-items: center; justify-content: space-between; background: #334155; padding: 10px 15px; margin: 8px 0; border-radius: 10px; }
+    
+    .mac { display: flex; align-items: center; justify-content: center; gap: 15px; background: #334155; padding: 10px; margin: 8px 0; border-radius: 10px; }
+    .tahmin-satir { display: flex; justify-content: center; gap: 10px; margin: 4px 0; }
+    
     ul { list-style: none; padding: 0; }
-    li { background: #334155; padding: 15px; margin-bottom: 10px; border-radius: 12px; text-align: left; }
+    li { background: #334155; padding: 15px; margin-bottom: 10px; border-radius: 12px; text-align: center; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
     td { padding: 5px; border-bottom: 1px solid #475569; }
 </style></head><body>
@@ -69,7 +72,12 @@
                         Oyuncu: ${t.oyuncu||'-'} | Kaleci: ${t.kaleci||'-'}<br>
                         Genç: ${t.genc||'-'} | Gol Kralı: ${t.golKrali||'-'}
                     </small><br>
-                    ${Object.keys(u.tahminler || {}).map(mId => `<span style="display:block; margin-top:5px;">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('')}
+                    ${Object.keys(u.tahminler || {}).map(mId => 
+                        `<div class="tahmin-satir">
+                            <span>${data.macHaritasi[mId] || mId}:</span>
+                            <b>${u.tahminler[mId].home}-${u.tahminler[mId].away}</b>
+                        </div>`
+                    ).join('')}
                 </li>`;
             }).join('') + "</ul>"; 
         }
@@ -78,20 +86,15 @@
         async function skor(){ await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})}); alert("Güncellendi!"); location.reload(); }
         async function puanDuzenle(){ await fetch('/api/admin/puan-duzenle', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uIsim').value, yeniPuan:document.getElementById('uPuan').value})}); alert("Güncellendi!"); location.reload(); }
         async function kullaniciSil(){ await fetch('/api/admin/kullanici-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('silIsim').value})}); alert("Silindi!"); location.reload(); }
-fetch('/api/puan-tablosu')
-    .then(r => r.json())
-    .then(d => {
-        document.getElementById('tbl').innerHTML = d.map((x, i) => {
-            let icon = "";
-            if (i === 0) icon = "🥇 ";
-            else if (i === 1) icon = "🥈 ";
-            else if (i === 2) icon = "🥉 ";
-            else if (i === d.length - 1 && d.length > 3) icon = "💩 ";
-            
-            return `<div style="padding: 8px; border-bottom: 1px solid #334155;">
-                ${icon} <b>${x.isim}</b>: ${x.puan}
-            </div>`;
-        }).join('');
-    });
-</script>
+        fetch('/api/puan-tablosu')
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('tbl').innerHTML = d.map((x, i) => {
+                    let icon = i === 0 ? "🥇 " : i === 1 ? "🥈 " : i === 2 ? "🥉 " : (i === d.length - 1 && d.length > 3) ? "💩 " : "";
+                    return `<div style="padding: 5px; border-bottom: 1px solid #334155; display: flex; justify-content: center; gap: 10px;">
+                        <span>${icon}</span><b>${x.isim}</b>: ${x.puan}
+                    </div>`;
+                }).join('');
+            });
+    </script>
 </body></html>
