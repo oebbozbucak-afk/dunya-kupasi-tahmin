@@ -1,45 +1,41 @@
 <!DOCTYPE html>
-<html lang="tr"><head><meta charset="UTF-8"><title>WC 2026</title>
+<html lang="tr"><head><meta charset="UTF-8"><title>WC 2026 Tahmin</title>
 <style>
-    body{background:#0f172a; color:white; font-family:sans-serif; text-align:center; padding:10px;}
-    .card{background:#1e293b; padding:15px; border-radius:10px; margin:10px auto; max-width:400px;}
-    input{background:#0f172a; color:white; border:1px solid #475569; padding:5px; margin:5px; width:40px;}
+    :root { --primary: #38bdf8; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; }
+    .card { background: var(--card); padding: 20px; border-radius: 16px; margin: 15px auto; max-width: 450px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid #334155; }
+    h1 { color: var(--primary); font-size: 2rem; margin-bottom: 20px; }
+    input { background: #0f172a; color: white; border: 1px solid #475569; padding: 10px; margin: 5px; border-radius: 8px; width: 60px; outline: none; }
+    button { background: var(--primary); color: #0f172a; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s; margin-top: 10px; }
+    button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+    .mac { display: flex; align-items: center; justify-content: space-between; background: #334155; padding: 10px 15px; margin: 8px 0; border-radius: 10px; }
+    ul { list-style: none; padding: 0; }
+    li { background: #334155; padding: 10px; margin-bottom: 8px; border-radius: 8px; text-align: left; }
 </style></head><body>
-    <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" placeholder="İsim" style="width:120px"><br><button onclick="giris()">Giriş Yap</button></div>
+    <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" style="width:150px" placeholder="Adınız"><br><button onclick="giris()">Giriş Yap</button></div>
     <div id="app" style="display:none">
         <h1>🏆 WC 2026</h1>
-        <div class="card">Tarih: <input type="date" id="t" onchange="getMac()" style="width:120px"></div>
+        <div class="card">Tarih Seç: <input type="date" id="t" onchange="getMac()" style="width:140px"></div>
         <div id="mList"></div><button onclick="save()">Tahminleri Kaydet</button>
         <div class="card">
             <h2>Turnuva Tahminleri</h2>
-            <input id="s1" placeholder="1." style="width:60px"><input id="s2" placeholder="2." style="width:60px"><br>
-            <input id="s3" placeholder="3." style="width:60px"><input id="s4" placeholder="4." style="width:60px"><br>
-            <input id="oyuncu" placeholder="En İyi Oyuncu" style="width:150px"><br>
-            <input id="kaleci" placeholder="En İyi Kaleci" style="width:150px"><br>
-            <input id="genc" placeholder="En İyi Genç" style="width:150px"><br>
-            <input id="golKrali" placeholder="Gol Kralı" style="width:150px"><br>
-            <button onclick="saveTurnuva()">Turnuva Tahminini Kaydet</button>
+            <input id="s1" placeholder="1."><input id="s2" placeholder="2."><br>
+            <input id="s3" placeholder="3."><input id="s4" placeholder="4."><br>
+            <input id="oyuncu" placeholder="Oyuncu" style="width:130px"><br>
+            <input id="kaleci" placeholder="Kaleci" style="width:130px"><br>
+            <input id="genc" placeholder="Genç" style="width:130px"><br>
+            <input id="golKrali" placeholder="Gol Kralı" style="width:130px"><br>
+            <button onclick="saveTurnuva()">Tahminleri Kaydet</button>
         </div>
         <div class="card"><h2>Puan Tablosu</h2><div id="tbl"></div></div>
-        <div class="card">
-            <h2>Puanlama Kuralları</h2>
-            <table style="width:100%; border-collapse:collapse; color:white; font-size: 0.8em; text-align: left;">
-                <tr><td>Beraberlik+Skor</td><td>7</td></tr>
-                <tr><td>Kazanan+Skor</td><td>6</td></tr>
-                <tr><td>Beraberlik</td><td>3</td></tr>
-                <tr><td>Kazanan+1Gol</td><td>3</td></tr>
-                <tr><td>Sadece Kazanan</td><td>2</td></tr>
-                <tr><td>Sadece 1 Gol</td><td>1</td></tr>
-            </table>
-        </div>
-        <div class="card"><h2>Tahminleri Gör</h2><button onclick="tahminleriGetir()">Göster</button><div id="tahminListesi"></div></div>
-        <div id="admin" class="card" style="border:2px solid red; display:none;">
-            <h3>Admin Paneli</h3><input id="sifre" type="password" placeholder="Şifre" style="width:80px"><br>
+        <div class="card"><h2>Tahminleri Gör</h2><button onclick="tahminleriGetir()">Göster</button><div id="tahminListesi" style="margin-top:15px;"></div></div>
+        <div id="admin" class="card" style="border:2px solid #ef4444; display:none;">
+            <h3>Admin Paneli</h3><input id="sifre" type="password" placeholder="Şifre" style="width:100px"><br>
             <textarea id="mInput" placeholder="Tarih,İsim,Id"></textarea><br><button onclick="toplu()">Maç Ekle</button><hr>
-            <input id="uTahminSil" placeholder="İsim"><button onclick="tahminSil()">Kullanıcı Tahminini Sil</button><hr>
+            <input id="uTahminSil" placeholder="İsim"><button onclick="tahminSil()">Tahmin Sil</button><hr>
             <input id="mid" placeholder="ID"><input id="sh" placeholder="E"><input id="sa" placeholder="D"><button onclick="skor()">Skor Gir</button><br>
             <input id="uIsim" placeholder="İsim"><input id="uPuan" placeholder="Puan"><button onclick="puanDuzenle()">Puan Düzenle</button><hr>
-            <input id="silIsim" placeholder="Silinecek İsim"><button onclick="kullaniciSil()">Kullanıcıyı Sil</button>
+            <input id="silIsim" placeholder="İsim"><button onclick="kullaniciSil()">Kullanıcı Sil</button>
         </div>
     </div>
     <script>
@@ -47,10 +43,10 @@
         window.onkeydown=(e)=>{if(e.key==='a')document.getElementById('admin').style.display='block';};
         async function giris(){ let n = document.getElementById('isim').value; if(n) { localStorage.setItem('isim', n); start(n); } }
         async function start(n){ await fetch('/api/giris', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:n})}); document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; getMac(); }
-        async function getMac(){ let m = await (await fetch('/api/maclar/'+document.getElementById('t').value)).json(); document.getElementById('mList').innerHTML = m.map(x => `<div class='mac' data-id='${x.macId}'>${x.isim}: <input class='h' value='0'>-<input class='a' value='0'></div>`).join(''); }
-        async function save(){ let t = {}; document.querySelectorAll('.mac').forEach(x=>{t[x.dataset.id]={home:x.querySelector('.h').value, away:x.querySelector('.a').value}}); await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), yeniTahminler:t})}); alert("Kaydedildi!"); }
+        async function getMac(){ let m = await (await fetch('/api/maclar/'+document.getElementById('t').value)).json(); document.getElementById('mList').innerHTML = m.map(x => `<div class='mac'><span>${x.isim}</span><div><input class='h' value='0'>-<input class='a' value='0'></div></div>`).join(''); }
+        async function save(){ let t = {}; document.querySelectorAll('.mac').forEach((x,i)=>{let id=document.querySelectorAll('.mac')[i].dataset.id; t[id]={home:x.querySelector('.h').value, away:x.querySelector('.a').value}}); await fetch('/api/tahmin-kaydet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), yeniTahminler:t})}); alert("Kaydedildi!"); }
         async function saveTurnuva(){ let t = {s1:document.getElementById('s1').value,s2:document.getElementById('s2').value,s3:document.getElementById('s3').value,s4:document.getElementById('s4').value,oyuncu:document.getElementById('oyuncu').value,kaleci:document.getElementById('kaleci').value,genc:document.getElementById('genc').value,golKrali:document.getElementById('golKrali').value}; await fetch('/api/turnuva-tahmin', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isim:localStorage.getItem('isim'), tahminler:t})}); alert("Kaydedildi!"); }
-        async function tahminleriGetir(){ let data = await (await fetch('/api/tum-tahminler')).json(); document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li style='text-align:left; margin-bottom:15px;'><b>${u.isim}:</b><br>${u.turnuvaTahminleri ? `<small style='color:#38bdf8'>Şampiyon:${u.turnuvaTahminleri.s1}, ${u.turnuvaTahminleri.s2}, ${u.turnuvaTahminleri.s3}, ${u.turnuvaTahminleri.s4}<br>Ödüller: ${u.turnuvaTahminleri.oyuncu}, ${u.turnuvaTahminleri.kaleci}, ${u.turnuvaTahminleri.genc}, ${u.turnuvaTahminleri.golKrali}</small><br>` : ""}` + Object.keys(u.tahminler || {}).map(mId => `<span style="margin-left:15px">${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}</span>`).join('<br>') + "</li>").join('') + "</ul>"; }
+        async function tahminleriGetir(){ let data = await (await fetch('/api/tum-tahminler')).json(); document.getElementById('tahminListesi').innerHTML = "<ul>" + data.users.map(u => `<li><b>${u.isim}:</b><br>${u.turnuvaTahminleri ? `<small style='color:var(--primary)'>Şampiyon: ${Object.values(u.turnuvaTahminleri).slice(0,4).join(', ')}</small><br>` : ""}` + Object.keys(u.tahminler || {}).map(mId => `${data.macHaritasi[mId] || mId}: ${u.tahminler[mId].home}-${u.tahminler[mId].away}`).join(', ') + "</li>").join('') + "</ul>"; }
         async function toplu(){ let list = document.getElementById('mInput').value.split('\n'); for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); } alert("Yüklendi!"); location.reload(); }
         async function tahminSil(){ await fetch('/api/admin/tahmin-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uTahminSil').value})}); alert("Silindi!"); location.reload(); }
         async function skor(){ await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})}); alert("Güncellendi!"); location.reload(); }
