@@ -47,7 +47,7 @@ app.post('/api/turnuva-tahmin', async (req, res) => {
 });
 
 app.post('/api/admin/tahmin-sil', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
+    if (req.body.sifre !== "aq1") return;
     await User.findOneAndUpdate({ isim: req.body.isim }, { tahminler: {} });
     res.json({ mesaj: "Kullanıcının tahminleri silindi!" });
 });
@@ -63,13 +63,13 @@ app.get('/api/tum-tahminler', async (req, res) => {
 });
 
 app.post('/api/admin/mac-ekle', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
+    if (req.body.sifre !== "aq1") return;
     await Mac.findOneAndUpdate({ macId: req.body.mac.macId }, req.body.mac, { upsert: true });
     res.json({});
 });
 
 app.post('/api/admin/skor-gir', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
+    if (req.body.sifre !== "aq1") return;
     await Mac.findOneAndUpdate({ macId: req.body.macId }, { homeScore: req.body.homeScore, awayScore: req.body.awayScore });
     const users = await User.find();
     for(let u of users) {
@@ -84,13 +84,13 @@ app.post('/api/admin/skor-gir', async (req, res) => {
 });
 
 app.post('/api/admin/puan-duzenle', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
+    if (req.body.sifre !== "aq1") return;
     await User.findOneAndUpdate({ isim: req.body.isim }, { puan: req.body.yeniPuan });
     res.json({ mesaj: "Puan güncellendi!" });
 });
 
 app.post('/api/admin/kullanici-sil', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
+    if (req.body.sifre !== "aq1") return;
     await User.findOneAndDelete({ isim: req.body.isim });
     res.json({ mesaj: "Silindi!" });
 });
