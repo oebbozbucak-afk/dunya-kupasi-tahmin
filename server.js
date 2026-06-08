@@ -30,9 +30,8 @@ app.post('/api/tahmin-kaydet', async (req, res) => {
 });
 
 app.post('/api/turnuva-tahmin', async (req, res) => {
-    if (new Date() > new Date('2026-06-11')) return res.status(400).json({mesaj: "Süre doldu!"});
     await User.findOneAndUpdate({ isim: req.body.isim }, { turnuvaTahminleri: req.body.tahminler });
-    res.json({ mesaj: "Tahminler kaydedildi!" });
+    res.json({ mesaj: "Turnuva tahminleri kaydedildi!" });
 });
 
 app.get('/api/maclar/:tarih', async (req, res) => { res.json(await Mac.find({ tarih: req.params.tarih })); });
@@ -45,7 +44,6 @@ app.get('/api/tum-tahminler', async (req, res) => {
     res.json({ users, macHaritasi });
 });
 
-// Admin Komutları (Şifre: ordu52)
 app.post('/api/admin/mac-ekle', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
     await Mac.findOneAndUpdate({ macId: req.body.mac.macId }, req.body.mac, { upsert: true });
@@ -55,25 +53,13 @@ app.post('/api/admin/mac-ekle', async (req, res) => {
 app.post('/api/admin/skor-gir', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
     await Mac.findOneAndUpdate({ macId: req.body.macId }, { homeScore: req.body.homeScore, awayScore: req.body.awayScore });
-    res.json({ mesaj: "Skor girildi" });
-});
-
-app.post('/api/admin/puan-duzenle', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
-    await User.findOneAndUpdate({ isim: req.body.isim }, { puan: req.body.yeniPuan });
-    res.json({ mesaj: "Puan güncellendi!" });
+    res.json({ mesaj: "Skor güncellendi" });
 });
 
 app.post('/api/admin/tahmin-sil', async (req, res) => {
     if (req.body.sifre !== "ordu52") return;
     await User.findOneAndUpdate({ isim: req.body.isim }, { tahminler: {} });
     res.json({ mesaj: "Tahminler silindi!" });
-});
-
-app.post('/api/admin/kullanici-sil', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
-    await User.findOneAndDelete({ isim: req.body.isim });
-    res.json({ mesaj: "Silindi!" });
 });
 
 app.listen(process.env.PORT || 3000);
