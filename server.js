@@ -46,6 +46,13 @@ app.post('/api/turnuva-tahmin', async (req, res) => {
     res.json({ mesaj: "Tahminler kaydedildi!" });
 });
 
+// ADMIN KOMUTLARI
+app.post('/api/admin/tahmin-sil', async (req, res) => {
+    if (req.body.sifre !== "ordu52") return;
+    await User.findOneAndUpdate({ isim: req.body.isim }, { tahminler: {} });
+    res.json({ mesaj: "Kullanıcının tahminleri silindi!" });
+});
+
 app.get('/api/maclar/:tarih', async (req, res) => { res.json(await Mac.find({ tarih: req.params.tarih })); });
 app.get('/api/puan-tablosu', async (req, res) => { res.json(await User.find().sort({ puan: -1 })); });
 app.get('/api/tum-tahminler', async (req, res) => {
@@ -75,19 +82,6 @@ app.post('/api/admin/skor-gir', async (req, res) => {
         await User.updateOne({ _id: u._id }, { puan: yeniPuan });
     }
     res.json({ mesaj: "Güncellendi" });
-});
-
-// Admin Silme Komutları
-app.post('/api/admin/mac-sil', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
-    await Mac.findOneAndDelete({ macId: req.body.macId });
-    res.json({ mesaj: "Maç silindi!" });
-});
-
-app.post('/api/admin/turnuva-temizle', async (req, res) => {
-    if (req.body.sifre !== "ordu52") return;
-    await User.updateMany({}, { turnuvaTahminleri: null });
-    res.json({ mesaj: "Tüm turnuva tahminleri sıfırlandı!" });
 });
 
 app.post('/api/admin/puan-duzenle', async (req, res) => {
