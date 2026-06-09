@@ -20,6 +20,13 @@
     <div id="auth" class="card"><h3>İsimle Giriş</h3><input id="isim" style="width:150px" placeholder="Adınız"><br><button onclick="giris()">Giriş Yap</button></div>
     <div id="app" style="display:none">
         <h1>🏆 WC 2026</h1>
+        
+        <div class="card" style="border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.1);">
+            <p style="color: #fbbf24; font-size: 0.9em; margin: 0; font-weight: bold;">
+                ⚠️ ÖNEMLİ: Gece maçlarını unutma! Maç saatleri bir sonraki günün tarihine ait olabilir, tarih seçimine dikkat et.
+            </p>
+        </div>
+
         <div class="card">Tarih Seç: <input type="date" id="t" onchange="getMac()" style="width:140px"></div>
         <div id="mList"></div><button onclick="save()">Tahminleri Kaydet</button>
         <div class="card">
