@@ -57,7 +57,7 @@
             <textarea id="mInput" placeholder="Tarih,İsim,Id"></textarea><br><button onclick="toplu()">Maç Ekle</button><hr>
             <input id="uTahminSil" placeholder="İsim"><button onclick="tahminSil()">Tahmin Sil</button><hr>
             <input id="mid" placeholder="ID"><input id="sh" placeholder="E"><input id="sa" placeholder="D"><button onclick="skor()">Skor Gir</button><br>
-            <input id="silMacId" placeholder="Silinecek Maç ID"><button onclick="macSil()">Maç Sil</button><hr>
+            <input id="silMacIsim" placeholder="Maç İsmi" style="width:120px"><button onclick="macSilIsimle()">İsimle Maç Sil</button><hr>
             <input id="uIsim" placeholder="İsim"><input id="uPuan" placeholder="Puan"><button onclick="puanDuzenle()">Puan Düzenle</button><hr>
             <input id="silIsim" placeholder="İsim"><button onclick="kullaniciSil()">Kullanıcı Sil</button>
         </div>
@@ -98,7 +98,7 @@
         async function toplu(){ let list = document.getElementById('mInput').value.split('\n'); for(let row of list){ let [tarih, isim, macId] = row.split(','); await fetch('/api/admin/mac-ekle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, mac:{tarih,isim,macId}})}); } alert("Yüklendi!"); location.reload(); }
         async function tahminSil(){ await fetch('/api/admin/tahmin-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uTahminSil').value})}); alert("Silindi!"); location.reload(); }
         async function skor(){ await fetch('/api/admin/skor-gir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('mid').value, homeScore:document.getElementById('sh').value, awayScore:document.getElementById('sa').value})}); alert("Güncellendi!"); location.reload(); }
-        async function macSil(){ await fetch('/api/admin/mac-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, macId:document.getElementById('silMacId').value})}); alert("Maç silindi!"); location.reload(); }
+        async function macSilIsimle(){ await fetch('/api/admin/mac-sil-isimle', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('silMacIsim').value})}); alert("İşlem tamamlandı!"); location.reload(); }
         async function puanDuzenle(){ await fetch('/api/admin/puan-duzenle', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('uIsim').value, yeniPuan:document.getElementById('uPuan').value})}); alert("Güncellendi!"); location.reload(); }
         async function kullaniciSil(){ await fetch('/api/admin/kullanici-sil', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sifre:document.getElementById('sifre').value, isim:document.getElementById('silIsim').value})}); alert("Silindi!"); location.reload(); }
         fetch('/api/puan-tablosu')
